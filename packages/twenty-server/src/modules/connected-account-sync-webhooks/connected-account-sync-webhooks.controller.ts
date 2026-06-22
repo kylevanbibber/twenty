@@ -12,6 +12,10 @@ import {
 } from '@nestjs/common';
 
 import { type Response } from 'express';
+import {
+  ConnectedAccountProvider,
+  WebhookSubscriptionChannelType,
+} from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 
 import { escapeHtml } from 'src/engine/core-modules/emailing-domain/utils/escape-html.util';
@@ -20,10 +24,7 @@ import { NoPermissionGuard } from 'src/engine/guards/no-permission.guard';
 import { PublicEndpointGuard } from 'src/engine/guards/public-endpoint.guard';
 import { WEBHOOK_SUBSCRIPTION_ROUTE_PATHS } from 'src/modules/connected-account/webhook-subscription-manager/constants/webhook-subscription-route-paths.constant';
 import { ConnectedAccountSyncWebhookApiExceptionFilter } from 'src/modules/connected-account-sync-webhooks/filters/connected-account-sync-webhook-api-exception.filter';
-import { GoogleCalendarNotificationHandler } from 'src/modules/connected-account-sync-webhooks/handlers/google-calendar-notification.handler';
-import { GoogleMessagingNotificationHandler } from 'src/modules/connected-account-sync-webhooks/handlers/google-messaging-notification.handler';
-import { MicrosoftCalendarNotificationHandler } from 'src/modules/connected-account-sync-webhooks/handlers/microsoft-calendar-notification.handler';
-import { MicrosoftMessagingNotificationHandler } from 'src/modules/connected-account-sync-webhooks/handlers/microsoft-messaging-notification.handler';
+import { WebhookNotificationHandlerFactory } from 'src/modules/connected-account-sync-webhooks/services/webhook-notification-handler-factory.service';
 import { type GooglePubSubPushMessage } from 'src/modules/connected-account-sync-webhooks/types/google-pubsub-push.type';
 import { type MicrosoftGraphNotificationPayload } from 'src/modules/connected-account-sync-webhooks/types/microsoft-graph-notification.type';
 
@@ -32,10 +33,7 @@ import { type MicrosoftGraphNotificationPayload } from 'src/modules/connected-ac
 @UseGuards(PublicEndpointGuard, NoPermissionGuard)
 export class ConnectedAccountSyncWebhooksController {
   constructor(
-    private readonly googleMessagingNotificationHandler: GoogleMessagingNotificationHandler,
-    private readonly googleCalendarNotificationHandler: GoogleCalendarNotificationHandler,
-    private readonly microsoftMessagingNotificationHandler: MicrosoftMessagingNotificationHandler,
-    private readonly microsoftCalendarNotificationHandler: MicrosoftCalendarNotificationHandler,
+    private readonly webhookNotificationHandlerFactory: WebhookNotificationHandlerFactory,
   ) {}
 
   @Post(WEBHOOK_SUBSCRIPTION_ROUTE_PATHS.GOOGLE_MESSAGING)
@@ -44,10 +42,12 @@ export class ConnectedAccountSyncWebhooksController {
     @Body() body: GooglePubSubPushMessage,
     @Headers('authorization') authorizationHeader: string | undefined,
   ): Promise<void> {
-    await this.googleMessagingNotificationHandler.handle({
-      body,
-      authorizationHeader,
-    });
+    await this.webhookNotificationHandlerFactory
+      .getHandler<'google:messaging'>(
+        ConnectedAccountProvider.GOOGLE,
+        WebhookSubscriptionChannelType.MESSAGING,
+      )
+      .handle({ body, authorizationHeader });
   }
 
   @Post(WEBHOOK_SUBSCRIPTION_ROUTE_PATHS.GOOGLE_CALENDAR)
@@ -57,11 +57,12 @@ export class ConnectedAccountSyncWebhooksController {
     @Headers('x-goog-resource-state') resourceState: string | undefined,
     @Headers('x-goog-channel-token') channelToken: string | undefined,
   ): Promise<void> {
-    await this.googleCalendarNotificationHandler.handle({
-      channelId,
-      resourceState,
-      channelToken,
-    });
+    await this.webhookNotificationHandlerFactory
+      .getHandler<'google:calendar'>(
+        ConnectedAccountProvider.GOOGLE,
+        WebhookSubscriptionChannelType.CALENDAR,
+      )
+      .handle({ channelId, resourceState, channelToken });
   }
 
   @Post(WEBHOOK_SUBSCRIPTION_ROUTE_PATHS.MICROSOFT_MESSAGING)
@@ -75,7 +76,12 @@ export class ConnectedAccountSyncWebhooksController {
       return this.respondToValidationHandshake(validationToken, response);
     }
 
-    await this.microsoftMessagingNotificationHandler.handle(body.value ?? []);
+    await this.webhookNotificationHandlerFactory
+      .getHandler<'microsoft:messaging'>(
+        ConnectedAccountProvider.MICROSOFT,
+        WebhookSubscriptionChannelType.MESSAGING,
+      )
+      .handle(body.value ?? []);
 
     return '';
   }
@@ -91,7 +97,12 @@ export class ConnectedAccountSyncWebhooksController {
       return this.respondToValidationHandshake(validationToken, response);
     }
 
-    await this.microsoftCalendarNotificationHandler.handle(body.value ?? []);
+    await this.webhookNotificationHandlerFactory
+      .getHandler<'microsoft:calendar'>(
+        ConnectedAccountProvider.MICROSOFT,
+        WebhookSubscriptionChannelType.CALENDAR,
+      )
+      .handle(body.value ?? []);
 
     return '';
   }

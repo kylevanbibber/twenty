@@ -19,16 +19,12 @@ import {
   ConnectedAccountSyncWebhookException,
   ConnectedAccountSyncWebhookExceptionCode,
 } from 'src/modules/connected-account-sync-webhooks/connected-account-sync-webhook.exception';
+import { type GoogleMessagingNotificationRequest } from 'src/modules/connected-account-sync-webhooks/types/google-messaging-notification-request.type';
 import {
   type GmailPushDecodedData,
   type GooglePubSubPushMessage,
 } from 'src/modules/connected-account-sync-webhooks/types/google-pubsub-push.type';
 import { type WebhookNotificationHandler } from 'src/modules/connected-account-sync-webhooks/types/webhook-notification-handler.type';
-
-export type GoogleMessagingNotificationRequest = {
-  body: GooglePubSubPushMessage;
-  authorizationHeader: string | undefined;
-};
 
 @Injectable()
 export class GoogleMessagingNotificationHandler implements WebhookNotificationHandler<GoogleMessagingNotificationRequest> {

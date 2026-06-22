@@ -1,3 +1,5 @@
+import { timingSafeEqual } from 'crypto';
+
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -14,7 +16,6 @@ import {
 } from 'src/modules/connected-account-sync-webhooks/connected-account-sync-webhook.exception';
 import { type GoogleCalendarChannelNotification } from 'src/modules/connected-account-sync-webhooks/types/google-calendar-notification.type';
 import { type WebhookNotificationHandler } from 'src/modules/connected-account-sync-webhooks/types/webhook-notification-handler.type';
-import { areStringsEqualConstantTime } from 'src/modules/connected-account-sync-webhooks/utils/are-strings-equal-constant-time.util';
 
 const GOOGLE_CALENDAR_SYNC_RESOURCE_STATE = 'sync';
 
@@ -46,11 +47,15 @@ export class GoogleCalendarNotificationHandler implements WebhookNotificationHan
       return;
     }
 
+    const channelTokenBuffer = Buffer.from(request.channelToken ?? '');
+    const expectedClientStateBuffer = Buffer.from(
+      calendarChannel.webhookSubscriptionClientState ?? '',
+    );
+
     if (
-      !areStringsEqualConstantTime(
-        request.channelToken,
-        calendarChannel.webhookSubscriptionClientState,
-      )
+      !isNonEmptyString(request.channelToken) ||
+      channelTokenBuffer.length !== expectedClientStateBuffer.length ||
+      !timingSafeEqual(channelTokenBuffer, expectedClientStateBuffer)
     ) {
       throw new ConnectedAccountSyncWebhookException(
         'Google calendar channel token mismatch',

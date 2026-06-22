@@ -11,6 +11,7 @@ export const getConnectedAccountSyncWebhookExceptionStatusCode = (
   switch (exception.code) {
     case ConnectedAccountSyncWebhookExceptionCode.MISSING_REQUEST_BODY:
     case ConnectedAccountSyncWebhookExceptionCode.INVALID_PAYLOAD:
+    case ConnectedAccountSyncWebhookExceptionCode.UNSUPPORTED_NOTIFICATION_HANDLER:
       return 400;
     case ConnectedAccountSyncWebhookExceptionCode.INVALID_SIGNATURE:
       return 403;

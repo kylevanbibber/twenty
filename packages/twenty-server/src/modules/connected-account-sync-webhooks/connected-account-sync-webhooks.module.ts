@@ -12,6 +12,7 @@ import { GoogleCalendarNotificationHandler } from 'src/modules/connected-account
 import { GoogleMessagingNotificationHandler } from 'src/modules/connected-account-sync-webhooks/handlers/google-messaging-notification.handler';
 import { MicrosoftCalendarNotificationHandler } from 'src/modules/connected-account-sync-webhooks/handlers/microsoft-calendar-notification.handler';
 import { MicrosoftMessagingNotificationHandler } from 'src/modules/connected-account-sync-webhooks/handlers/microsoft-messaging-notification.handler';
+import { WebhookNotificationHandlerFactory } from 'src/modules/connected-account-sync-webhooks/services/webhook-notification-handler-factory.service';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MicrosoftMessagingNotificationHandler } from 'src/modules/connected-acc
   ],
   controllers: [ConnectedAccountSyncWebhooksController],
   providers: [
+    WebhookNotificationHandlerFactory,
     GoogleMessagingNotificationHandler,
     GoogleCalendarNotificationHandler,
     MicrosoftMessagingNotificationHandler,

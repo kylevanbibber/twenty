@@ -8,6 +8,7 @@ export enum ConnectedAccountSyncWebhookExceptionCode {
   MISSING_REQUEST_BODY = 'MISSING_REQUEST_BODY',
   INVALID_PAYLOAD = 'INVALID_PAYLOAD',
   INVALID_SIGNATURE = 'INVALID_SIGNATURE',
+  UNSUPPORTED_NOTIFICATION_HANDLER = 'UNSUPPORTED_NOTIFICATION_HANDLER',
 }
 
 const getConnectedAccountSyncWebhookExceptionUserFriendlyMessage = (
@@ -16,6 +17,7 @@ const getConnectedAccountSyncWebhookExceptionUserFriendlyMessage = (
   switch (code) {
     case ConnectedAccountSyncWebhookExceptionCode.MISSING_REQUEST_BODY:
     case ConnectedAccountSyncWebhookExceptionCode.INVALID_PAYLOAD:
+    case ConnectedAccountSyncWebhookExceptionCode.UNSUPPORTED_NOTIFICATION_HANDLER:
       return msg`The webhook request could not be processed.`;
     case ConnectedAccountSyncWebhookExceptionCode.INVALID_SIGNATURE:
       return msg`The webhook request could not be authenticated.`;

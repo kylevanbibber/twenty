@@ -158,6 +158,12 @@ export const TAB_PROPS = {
     icon: 'IconSettings',
     layoutMode: PageLayoutTabLayoutMode.CANVAS,
   },
+  emailTemplates: {
+    title: 'Email Templates',
+    position: 20,
+    icon: 'IconMail',
+    layoutMode: PageLayoutTabLayoutMode.CANVAS,
+  },
 } as const;
 
 export const WIDGET_PROPS = {
@@ -218,6 +224,12 @@ export const WIDGET_PROPS = {
   workflow: {
     title: 'Flow',
     type: WidgetType.WORKFLOW,
+    gridPosition: GRID_POSITIONS.FULL_WIDTH,
+    position: CANVAS_LAYOUT_POSITIONS.DEFAULT,
+  },
+  workflowEmailTemplates: {
+    title: 'Email Templates',
+    type: WidgetType.WORKFLOW_EMAIL_TEMPLATES,
     gridPosition: GRID_POSITIONS.FULL_WIDTH,
     position: CANVAS_LAYOUT_POSITIONS.DEFAULT,
   },

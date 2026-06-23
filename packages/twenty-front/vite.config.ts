@@ -71,6 +71,25 @@ export default defineConfig(({ mode }) => {
     },
 
     plugins: [
+      // Dev-only: inject REACT_APP_SERVER_BASE_URL into window._env_ so the
+      // frontend talks to the backend wherever it runs. Without this, dev falls
+      // back to getDefaultUrl() -> http://localhost:3000 (see src/config/index.ts).
+      // In production the backend overwrites this window._env_ block at startup.
+      {
+        name: 'twenty-dev-env-config',
+        apply: 'serve',
+        transformIndexHtml(html: string) {
+          if (!isNonEmptyString(env.REACT_APP_SERVER_BASE_URL)) {
+            return html;
+          }
+          return html.replace(
+            /window\._env_ = \{[\s\S]*?\};/,
+            `window._env_ = { REACT_APP_SERVER_BASE_URL: ${JSON.stringify(
+              env.REACT_APP_SERVER_BASE_URL,
+            )} };`,
+          );
+        },
+      },
       react({
         plugins: [['@lingui/swc-plugin', {}]],
       }),

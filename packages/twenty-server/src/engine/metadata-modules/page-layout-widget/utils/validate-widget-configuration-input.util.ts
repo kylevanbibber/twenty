@@ -177,6 +177,11 @@ export const validateWidgetConfigurationInput = ({
         'Workflow configuration is not supported yet',
         PageLayoutWidgetExceptionCode.INVALID_PAGE_LAYOUT_WIDGET_DATA,
       );
+    case WidgetConfigurationType.WORKFLOW_EMAIL_TEMPLATES:
+      throw new PageLayoutWidgetException(
+        'Workflow email templates configuration is not supported yet',
+        PageLayoutWidgetExceptionCode.INVALID_PAGE_LAYOUT_WIDGET_DATA,
+      );
     case WidgetConfigurationType.WORKFLOW_VERSION:
       throw new PageLayoutWidgetException(
         'Workflow version configuration is not supported yet',

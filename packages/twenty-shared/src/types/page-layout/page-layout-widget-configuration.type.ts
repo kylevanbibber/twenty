@@ -161,6 +161,10 @@ export type WorkflowConfiguration = {
   configurationType: 'WORKFLOW';
 };
 
+export type WorkflowEmailTemplatesConfiguration = {
+  configurationType: 'WORKFLOW_EMAIL_TEMPLATES';
+};
+
 export type WorkflowVersionConfiguration = {
   configurationType: 'WORKFLOW_VERSION';
 };
@@ -189,6 +193,7 @@ export type PageLayoutWidgetConfiguration =
   | EmailsConfiguration
   | CalendarConfiguration
   | WorkflowConfiguration
+  | WorkflowEmailTemplatesConfiguration
   | WorkflowVersionConfiguration
   | WorkflowRunConfiguration
   | EmailThreadConfiguration;

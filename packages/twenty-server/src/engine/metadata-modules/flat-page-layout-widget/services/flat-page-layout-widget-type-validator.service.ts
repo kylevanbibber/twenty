@@ -83,6 +83,9 @@ export class FlatPageLayoutWidgetTypeValidatorService {
       WORKFLOW: validateSimpleRecordPageWidgetForCreation(
         WidgetConfigurationType.WORKFLOW,
       ),
+      WORKFLOW_EMAIL_TEMPLATES: validateSimpleRecordPageWidgetForCreation(
+        WidgetConfigurationType.WORKFLOW_EMAIL_TEMPLATES,
+      ),
       WORKFLOW_VERSION: validateSimpleRecordPageWidgetForCreation(
         WidgetConfigurationType.WORKFLOW_VERSION,
       ),
@@ -136,6 +139,9 @@ export class FlatPageLayoutWidgetTypeValidatorService {
       ),
       WORKFLOW: validateSimpleRecordPageWidgetForUpdate(
         WidgetConfigurationType.WORKFLOW,
+      ),
+      WORKFLOW_EMAIL_TEMPLATES: validateSimpleRecordPageWidgetForUpdate(
+        WidgetConfigurationType.WORKFLOW_EMAIL_TEMPLATES,
       ),
       WORKFLOW_VERSION: validateSimpleRecordPageWidgetForUpdate(
         WidgetConfigurationType.WORKFLOW_VERSION,

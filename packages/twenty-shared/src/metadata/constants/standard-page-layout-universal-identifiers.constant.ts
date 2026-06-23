@@ -334,6 +334,14 @@ export const STANDARD_PAGE_LAYOUT_UNIVERSAL_IDENTIFIERS = {
           },
         },
       },
+      emailTemplates: {
+        universalIdentifier: '20202020-ab06-4006-8006-a0bcf10a6602',
+        widgets: {
+          workflowEmailTemplates: {
+            universalIdentifier: '20202020-ac06-4006-8006-a0bcf10a6621',
+          },
+        },
+      },
     },
   },
   workflowVersionRecordPage: {

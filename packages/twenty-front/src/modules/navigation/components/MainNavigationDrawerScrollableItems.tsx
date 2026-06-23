@@ -1,9 +1,13 @@
 import { NavigationDrawerOpenedSection } from '@/navigation-menu-item/display/sections/components/NavigationDrawerOpenedSection';
 import { NavigationDrawerWorkspaceSectionSkeletonLoader } from '@/object-metadata/components/NavigationDrawerWorkspaceSectionSkeletonLoader';
+import { NavigationDrawerItem } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerItem';
+import { NavigationDrawerSection } from '@/ui/navigation/navigation-drawer/components/NavigationDrawerSection';
 
 import { styled } from '@linaria/react';
 import { lazy, Suspense } from 'react';
+import { useLocation } from 'react-router-dom';
 
+import { IconMail } from 'twenty-ui/icon';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
 const FavoritesSectionDispatcher = lazy(() =>
@@ -29,6 +33,8 @@ const StyledScrollableItemsContainer = styled.div`
 `;
 
 export const MainNavigationDrawerScrollableItems = () => {
+  const location = useLocation();
+
   return (
     <StyledScrollableItemsContainer>
       <NavigationDrawerOpenedSection />
@@ -36,6 +42,14 @@ export const MainNavigationDrawerScrollableItems = () => {
         <FavoritesSectionDispatcher />
         <WorkspaceSectionDispatcher />
       </Suspense>
+      <NavigationDrawerSection>
+        <NavigationDrawerItem
+          label="Email Templates"
+          to="/campaign-templates"
+          Icon={IconMail}
+          active={location.pathname === '/campaign-templates'}
+        />
+      </NavigationDrawerSection>
     </StyledScrollableItemsContainer>
   );
 };

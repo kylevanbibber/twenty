@@ -199,6 +199,7 @@ export type {
   EmailThreadConfiguration,
   CalendarConfiguration,
   WorkflowConfiguration,
+  WorkflowEmailTemplatesConfiguration,
   WorkflowVersionConfiguration,
   WorkflowRunConfiguration,
   PageLayoutWidgetConfiguration,

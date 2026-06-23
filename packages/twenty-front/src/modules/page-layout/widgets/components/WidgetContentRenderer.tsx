@@ -15,6 +15,7 @@ import { TaskWidget } from '@/page-layout/widgets/tasks/components/TaskWidget';
 import { TimelineWidget } from '@/page-layout/widgets/timeline/components/TimelineWidget';
 import { WorkflowRunWidget } from '@/page-layout/widgets/workflow/components/WorkflowRunWidget';
 import { WorkflowVersionWidget } from '@/page-layout/widgets/workflow/components/WorkflowVersionWidget';
+import { WorkflowEmailTemplatesWidget } from '@/page-layout/widgets/workflow/components/WorkflowEmailTemplatesWidget';
 import { RecordTableWidgetRenderer } from '@/page-layout/widgets/record-table/components/RecordTableWidgetRenderer';
 import { WorkflowWidget } from '@/page-layout/widgets/workflow/components/WorkflowWidget';
 import { WidgetType } from '~/generated-metadata/graphql';
@@ -62,6 +63,9 @@ export const WidgetContentRenderer = ({
 
     case WidgetType.WORKFLOW:
       return <WorkflowWidget />;
+
+    case WidgetType.WORKFLOW_EMAIL_TEMPLATES:
+      return <WorkflowEmailTemplatesWidget />;
 
     case WidgetType.WORKFLOW_VERSION:
       return <WorkflowVersionWidget />;

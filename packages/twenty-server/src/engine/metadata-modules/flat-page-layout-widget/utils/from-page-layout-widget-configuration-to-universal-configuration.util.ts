@@ -371,6 +371,7 @@ export const fromPageLayoutWidgetConfigurationToUniversalConfiguration = ({
     case WidgetConfigurationType.CALENDAR:
     case WidgetConfigurationType.FIELD_RICH_TEXT:
     case WidgetConfigurationType.WORKFLOW:
+    case WidgetConfigurationType.WORKFLOW_EMAIL_TEMPLATES:
     case WidgetConfigurationType.WORKFLOW_VERSION:
     case WidgetConfigurationType.WORKFLOW_RUN:
     case WidgetConfigurationType.IFRAME:

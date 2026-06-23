@@ -37,6 +37,7 @@ const RECORD_PAGE_LAYOUT_WIDGET_TYPES = [
   WidgetType.CALENDAR,
   WidgetType.FIELD_RICH_TEXT,
   WidgetType.WORKFLOW,
+  WidgetType.WORKFLOW_EMAIL_TEMPLATES,
   WidgetType.WORKFLOW_VERSION,
   WidgetType.WORKFLOW_RUN,
 ];
@@ -56,6 +57,8 @@ const WIDGET_TYPE_TO_CONFIGURATION_TYPE: Partial<
   [WidgetType.CALENDAR]: WidgetConfigurationType.CALENDAR,
   [WidgetType.FIELD_RICH_TEXT]: WidgetConfigurationType.FIELD_RICH_TEXT,
   [WidgetType.WORKFLOW]: WidgetConfigurationType.WORKFLOW,
+  [WidgetType.WORKFLOW_EMAIL_TEMPLATES]:
+    WidgetConfigurationType.WORKFLOW_EMAIL_TEMPLATES,
   [WidgetType.WORKFLOW_VERSION]: WidgetConfigurationType.WORKFLOW_VERSION,
   [WidgetType.WORKFLOW_RUN]: WidgetConfigurationType.WORKFLOW_RUN,
   [WidgetType.RECORD_TABLE]: WidgetConfigurationType.RECORD_TABLE,

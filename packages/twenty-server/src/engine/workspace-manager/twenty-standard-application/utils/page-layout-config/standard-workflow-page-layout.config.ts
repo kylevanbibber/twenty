@@ -28,6 +28,20 @@ const WORKFLOW_PAGE_TABS = {
       },
     },
   },
+  emailTemplates: {
+    universalIdentifier:
+      STANDARD_PAGE_LAYOUT_UNIVERSAL_IDENTIFIERS.workflowRecordPage.tabs
+        .emailTemplates.universalIdentifier,
+    ...TAB_PROPS.emailTemplates,
+    widgets: {
+      workflowEmailTemplates: {
+        universalIdentifier:
+          STANDARD_PAGE_LAYOUT_UNIVERSAL_IDENTIFIERS.workflowRecordPage.tabs
+            .emailTemplates.widgets.workflowEmailTemplates.universalIdentifier,
+        ...WIDGET_PROPS.workflowEmailTemplates,
+      },
+    },
+  },
 } as const satisfies Record<string, StandardPageLayoutTabConfig>;
 
 export const STANDARD_WORKFLOW_PAGE_LAYOUT_CONFIG = {

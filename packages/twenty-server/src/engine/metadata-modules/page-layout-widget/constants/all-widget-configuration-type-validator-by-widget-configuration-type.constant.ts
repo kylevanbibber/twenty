@@ -18,6 +18,7 @@ import { TasksConfigurationDTO } from 'src/engine/metadata-modules/page-layout-w
 import { TimelineConfigurationDTO } from 'src/engine/metadata-modules/page-layout-widget/dtos/timeline-configuration.dto';
 import { ViewConfigurationDTO } from 'src/engine/metadata-modules/page-layout-widget/dtos/view-configuration.dto';
 import { WorkflowConfigurationDTO } from 'src/engine/metadata-modules/page-layout-widget/dtos/workflow-configuration.dto';
+import { WorkflowEmailTemplatesConfigurationDTO } from 'src/engine/metadata-modules/page-layout-widget/dtos/workflow-email-templates-configuration.dto';
 import { WorkflowRunConfigurationDTO } from 'src/engine/metadata-modules/page-layout-widget/dtos/workflow-run-configuration.dto';
 import { WorkflowVersionConfigurationDTO } from 'src/engine/metadata-modules/page-layout-widget/dtos/workflow-version-configuration.dto';
 import { type WidgetConfigurationType } from 'src/engine/metadata-modules/page-layout-widget/enums/widget-configuration-type.type';
@@ -45,6 +46,7 @@ export const ALL_WIDGET_CONFIGURATION_TYPE_VALIDATOR_BY_WIDGET_CONFIGURATION_TYP
     VIEW: ViewConfigurationDTO,
     RECORD_TABLE: RecordTableConfigurationDTO,
     WORKFLOW: WorkflowConfigurationDTO,
+    WORKFLOW_EMAIL_TEMPLATES: WorkflowEmailTemplatesConfigurationDTO,
     WORKFLOW_RUN: WorkflowRunConfigurationDTO,
     WORKFLOW_VERSION: WorkflowVersionConfigurationDTO,
   } as const satisfies {

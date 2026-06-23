@@ -102,6 +102,12 @@ const StandalonePageLayoutPage = lazy(() =>
   })),
 );
 
+const CampaignTemplatesPage = lazy(() =>
+  import('~/pages/campaign-templates/CampaignTemplatesPage').then((module) => ({
+    default: module.CampaignTemplatesPage,
+  })),
+);
+
 const NotFound = lazy(() =>
   import('~/pages/not-found/NotFound').then((module) => ({
     default: module.NotFound,
@@ -234,6 +240,14 @@ export const useCreateAppRouter = (
               element={
                 <LazyRoute>
                   <StandalonePageLayoutPage />
+                </LazyRoute>
+              }
+            />
+            <Route
+              path="/campaign-templates"
+              element={
+                <LazyRoute>
+                  <CampaignTemplatesPage />
                 </LazyRoute>
               }
             />

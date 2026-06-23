@@ -9,7 +9,7 @@ import {
 
 /**
  * Default Workflow PageLayout.
- * Specialized layout for workflow visualization with a single Flow tab.
+ * Specialized layout for workflow visualization and email template editing.
  */
 export const DEFAULT_WORKFLOW_PAGE_LAYOUT: PageLayout = {
   __typename: 'PageLayout',
@@ -58,9 +58,52 @@ export const DEFAULT_WORKFLOW_PAGE_LAYOUT: PageLayout = {
             layoutMode: PageLayoutTabLayoutMode.CANVAS,
           },
           configuration: {
-            __typename: 'FieldsConfiguration',
-            configurationType: WidgetConfigurationType.FIELDS,
-            viewId: null,
+            __typename: 'WorkflowConfiguration',
+            configurationType: WidgetConfigurationType.WORKFLOW,
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          deletedAt: null,
+        },
+      ],
+    },
+    {
+      __typename: 'PageLayoutTab',
+      applicationId: '',
+      id: 'workflow-tab-email-templates',
+      isActive: true,
+      title: 'Email Templates',
+      position: 200,
+      layoutMode: PageLayoutTabLayoutMode.CANVAS,
+      icon: 'IconMail',
+      pageLayoutId: DEFAULT_WORKFLOW_PAGE_LAYOUT_ID,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      deletedAt: null,
+      widgets: [
+        {
+          __typename: 'PageLayoutWidget',
+          applicationId: '',
+          id: 'workflow-widget-email-templates',
+          isActive: true,
+          pageLayoutTabId: 'workflow-tab-email-templates',
+          title: 'Email Templates',
+          type: WidgetType.WORKFLOW_EMAIL_TEMPLATES,
+          objectMetadataId: null,
+          gridPosition: {
+            __typename: 'GridPosition',
+            row: 0,
+            column: 0,
+            rowSpan: 12,
+            columnSpan: 12,
+          },
+          position: {
+            __typename: 'PageLayoutWidgetCanvasPosition',
+            layoutMode: PageLayoutTabLayoutMode.CANVAS,
+          },
+          configuration: {
+            __typename: 'WorkflowEmailTemplatesConfiguration',
+            configurationType: WidgetConfigurationType.WORKFLOW_EMAIL_TEMPLATES,
           },
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),

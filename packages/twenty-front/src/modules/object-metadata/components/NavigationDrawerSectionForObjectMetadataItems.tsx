@@ -11,10 +11,11 @@ import { isNavigationSectionOpenFamilyState } from '@/ui/navigation/navigation-d
 import { useAtomFamilyStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomFamilyStateValue';
 import { isDefined } from 'twenty-shared/utils';
 
+// Fork customization: lead-focused drip CRM sidebar order.
+// 'lead' is a custom object so it's referenced by raw nameSingular.
 const ORDERED_FIRST_STANDARD_OBJECTS: string[] = [
-  CoreObjectNameSingular.Person,
-  CoreObjectNameSingular.Company,
-  CoreObjectNameSingular.Opportunity,
+  'lead',
+  CoreObjectNameSingular.Workflow,
   CoreObjectNameSingular.Task,
   CoreObjectNameSingular.Note,
 ];

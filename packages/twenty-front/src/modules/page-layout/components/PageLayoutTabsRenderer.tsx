@@ -23,11 +23,14 @@ import { activeTabIdComponentState } from '@/ui/layout/tab-list/states/activeTab
 import { ScrollWrapper } from '@/ui/utilities/scroll/components/ScrollWrapper';
 import { useAtomComponentStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomComponentStateValue';
 import { useAtomFamilyStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomFamilyStateValue';
+import { useWorkflowWithCurrentVersion } from '@/workflow/hooks/useWorkflowWithCurrentVersion';
+import { hasWorkflowEmailActions } from '@/workflow/workflow-email-templates/components/WorkflowEmailTemplatesPanel';
 import { styled } from '@linaria/react';
 import { useMemo } from 'react';
-import { FieldMetadataType } from 'twenty-shared/types';
+import { CoreObjectNameSingular, FieldMetadataType } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 import { useIsMobile } from 'twenty-ui/utilities';
+import { WidgetType } from '~/generated-metadata/graphql';
 
 const StyledContainer = styled.div<{ hasPinnedTab: boolean }>`
   display: grid;
@@ -119,6 +122,17 @@ export const PageLayoutTabsRenderer = () => {
     isPageLayoutInEditMode &&
     shouldEnableTabEditingFeatures(currentPageLayout.type);
 
+  const workflowWithCurrentVersion = useWorkflowWithCurrentVersion(
+    targetRecordIdentifier?.targetObjectNameSingular ===
+      CoreObjectNameSingular.Workflow
+      ? targetRecordIdentifier.id
+      : undefined,
+  );
+
+  const shouldShowWorkflowEmailTemplatesTab =
+    isPageLayoutInEditMode ||
+    hasWorkflowEmailActions(workflowWithCurrentVersion?.currentVersion);
+
   const tabsWithVisibleWidgets = getTabsWithVisibleWidgets({
     tabs: currentPageLayout.tabs,
     isMobile,
@@ -131,12 +145,24 @@ export const PageLayoutTabsRenderer = () => {
   const isUsingDefaultRecordPageLayout =
     currentPageLayout.id === DEFAULT_RECORD_PAGE_LAYOUT_ID;
 
-  const tabsForCurrentObject =
+  const tabsForCurrentObjectBeforeWorkflowEmailTemplatesFilter =
     isSystemObject && isUsingDefaultRecordPageLayout
       ? tabsWithVisibleWidgets.filter((tab) =>
           SYSTEM_OBJECT_TABS.includes(tab.title),
         )
       : tabsWithVisibleWidgets;
+
+  const tabsForCurrentObject =
+    targetRecordIdentifier?.targetObjectNameSingular ===
+    CoreObjectNameSingular.Workflow
+      ? tabsForCurrentObjectBeforeWorkflowEmailTemplatesFilter.filter(
+          (tab) =>
+            shouldShowWorkflowEmailTemplatesTab ||
+            !tab.widgets.some(
+              (widget) => widget.type === WidgetType.WORKFLOW_EMAIL_TEMPLATES,
+            ),
+        )
+      : tabsForCurrentObjectBeforeWorkflowEmailTemplatesFilter;
 
   const { tabsToRenderInTabList, pinnedLeftTab } = getTabsByDisplayMode({
     tabs: tabsForCurrentObject,
@@ -163,7 +189,7 @@ export const PageLayoutTabsRenderer = () => {
     [sortedTabs, inactiveRelationFieldNames],
   );
 
-  const activeTabExistsInCurrentPageLayout = currentPageLayout.tabs.some(
+  const activeTabExistsInCurrentPageLayout = sortedActiveTabs.some(
     (tab) => tab.id === activeTabId,
   );
 

@@ -13,6 +13,7 @@ import { useWorkflowDiagramScreenToFlowPosition } from '@/workflow/workflow-diag
 import { workflowDiagramComponentState } from '@/workflow/workflow-diagram/states/workflowDiagramComponentState';
 import { workflowDiagramPanOnDragComponentState } from '@/workflow/workflow-diagram/states/workflowDiagramPanOnDragComponentState';
 import { workflowDiagramWaitingNodesDimensionsComponentState } from '@/workflow/workflow-diagram/states/workflowDiagramWaitingNodesDimensionsComponentState';
+import { workflowNodeFocusRequestComponentState } from '@/workflow/workflow-diagram/states/workflowNodeFocusRequestComponentState';
 import { workflowSelectedNodeComponentState } from '@/workflow/workflow-diagram/states/workflowSelectedNodeComponentState';
 import {
   type StartNodeCreationParams,
@@ -190,6 +191,12 @@ export const WorkflowDiagramCanvasBase = ({
     );
   const setWorkflowDiagramWaitingNodesDimensions = useSetAtomComponentState(
     workflowDiagramWaitingNodesDimensionsComponentState,
+  );
+  const workflowNodeFocusRequest = useAtomComponentStateValue(
+    workflowNodeFocusRequestComponentState,
+  );
+  const setWorkflowNodeFocusRequest = useSetAtomComponentState(
+    workflowNodeFocusRequestComponentState,
   );
 
   const workflowInsertStepIds = useAtomComponentStateValue(
@@ -373,6 +380,59 @@ export const WorkflowDiagramCanvasBase = ({
     isSidePanelOpened,
     workflowDiagramFlowInitialized,
     isInSidePanel,
+  ]);
+
+  useEffect(() => {
+    if (
+      !isDefined(workflowNodeFocusRequest) ||
+      !workflowDiagramFlowInitialized
+    ) {
+      return;
+    }
+
+    const nodeToFocus = nodes.find(
+      (node) => node.id === workflowNodeFocusRequest.nodeId,
+    );
+
+    if (!isDefined(nodeToFocus) || !isDefined(nodeToFocus.measured)) {
+      return;
+    }
+
+    setWorkflowSelectedNode(workflowNodeFocusRequest.nodeId);
+    setWorkflowDiagram((diagram) => {
+      if (!isDefined(diagram)) {
+        return diagram;
+      }
+
+      return {
+        ...diagram,
+        nodes: diagram.nodes.map((node) => ({
+          ...node,
+          selected: node.id === workflowNodeFocusRequest.nodeId,
+        })),
+      };
+    });
+
+    const nodeWidth = nodeToFocus.measured.width ?? nodeToFocus.width ?? 200;
+    const nodeHeight = nodeToFocus.measured.height ?? nodeToFocus.height ?? 80;
+
+    reactflow.setCenter(
+      nodeToFocus.position.x + nodeWidth / 2,
+      nodeToFocus.position.y + nodeHeight / 2,
+      {
+        duration: 300,
+        zoom: defaultFitViewOptions.maxZoom,
+      },
+    );
+    setWorkflowNodeFocusRequest(undefined);
+  }, [
+    nodes,
+    reactflow,
+    setWorkflowDiagram,
+    setWorkflowNodeFocusRequest,
+    setWorkflowSelectedNode,
+    workflowDiagramFlowInitialized,
+    workflowNodeFocusRequest,
   ]);
 
   const handleNodesChanges = useCallback(

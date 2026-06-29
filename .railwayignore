@@ -19,6 +19,8 @@ dump.rdb
 packages/twenty-server/.env
 packages/twenty-front/build
 packages/twenty-front/.env
+packages/twenty-docs
+packages/twenty-website
 
 .vercel
 .swc

@@ -1,44 +1,59 @@
 import { useTargetRecord } from '@/ui/layout/contexts/useTargetRecord';
+import { useSetAtomComponentState } from '@/ui/utilities/state/jotai/hooks/useSetAtomComponentState';
 import { useWorkflowWithCurrentVersion } from '@/workflow/hooks/useWorkflowWithCurrentVersion';
 import { getWorkflowVisualizerComponentInstanceId } from '@/workflow/utils/getWorkflowVisualizerComponentInstanceId';
-import {
-  hasWorkflowEmailActions,
-  WorkflowEmailTemplatesPanel,
-} from '@/workflow/workflow-email-templates/components/WorkflowEmailTemplatesPanel';
 import { WorkflowDiagramCanvasEditable } from '@/workflow/workflow-diagram/components/WorkflowDiagramCanvasEditable';
 import { WorkflowDiagramEffect } from '@/workflow/workflow-diagram/components/WorkflowDiagramEffect';
 import { WorkflowSSESubscribeEffect } from '@/workflow/workflow-diagram/components/WorkflowSSESubscribeEffect';
 import { WorkflowVisualizerEffect } from '@/workflow/workflow-diagram/components/WorkflowVisualizerEffect';
 import { WorkflowVisualizerComponentInstanceContext } from '@/workflow/workflow-diagram/states/contexts/WorkflowVisualizerComponentInstanceContext';
+import { workflowNodeFocusRequestComponentState } from '@/workflow/workflow-diagram/states/workflowNodeFocusRequestComponentState';
+import {
+  hasWorkflowEmailActions,
+  WorkflowEmailTemplatesPanel,
+} from '@/workflow/workflow-email-templates/components/WorkflowEmailTemplatesPanel';
+import { type WorkflowVersion } from '@/workflow/types/Workflow';
 import { styled } from '@linaria/react';
+import { Panel } from '@xyflow/react';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
-const StyledWorkflowWithTemplates = styled.div`
-  display: flex;
-  height: 100%;
-  min-height: 0;
-  width: 100%;
+const StyledEmailTemplatesPanelOverlay = styled.div`
+  box-shadow: ${themeCssVariables.boxShadow.strong};
+  height: min(720px, calc(100vh - 160px));
+  max-height: calc(100vh - 160px);
+  width: min(520px, calc(100vw - 320px));
 
   @media (max-width: 900px) {
-    flex-direction: column;
+    height: min(560px, calc(100vh - 160px));
+    width: min(420px, calc(100vw - 48px));
   }
 `;
 
-const StyledWorkflowCanvas = styled.div`
-  flex: 1;
-  min-height: 0;
-  min-width: 0;
-`;
+const WorkflowEmailTemplatesCanvasPanel = ({
+  workflowVersion,
+}: {
+  workflowVersion: WorkflowVersion;
+}) => {
+  const setWorkflowNodeFocusRequest = useSetAtomComponentState(
+    workflowNodeFocusRequestComponentState,
+  );
 
-const StyledEmailTemplatesPanelContainer = styled.div`
-  flex: 0 0 520px;
-  min-height: 0;
-
-  @media (max-width: 900px) {
-    border-top: 1px solid ${themeCssVariables.border.color.medium};
-    flex: 0 0 50%;
-  }
-`;
+  return (
+    <Panel className="nodrag nopan" position="top-right">
+      <StyledEmailTemplatesPanelOverlay>
+        <WorkflowEmailTemplatesPanel
+          onEmailSelect={(stepId) => {
+            setWorkflowNodeFocusRequest({
+              nodeId: stepId,
+              requestId: Date.now(),
+            });
+          }}
+          workflowVersion={workflowVersion}
+        />
+      </StyledEmailTemplatesPanelOverlay>
+    </Panel>
+  );
+};
 
 export const WorkflowCard = () => {
   const targetRecord = useTargetRecord();
@@ -58,19 +73,13 @@ export const WorkflowCard = () => {
       <WorkflowVisualizerEffect workflowId={targetRecord.id} />
       <WorkflowSSESubscribeEffect workflowId={targetRecord.id} />
       <WorkflowDiagramEffect />
-      <StyledWorkflowWithTemplates>
-        <StyledWorkflowCanvas>
-          <WorkflowDiagramCanvasEditable />
-        </StyledWorkflowCanvas>
+      <WorkflowDiagramCanvasEditable>
         {shouldShowEmailTemplatesPanel && workflow?.currentVersion && (
-          <StyledEmailTemplatesPanelContainer>
-            <WorkflowEmailTemplatesPanel
-              shouldFocusWorkflowNodeOnSelect
-              workflowVersion={workflow.currentVersion}
-            />
-          </StyledEmailTemplatesPanelContainer>
+          <WorkflowEmailTemplatesCanvasPanel
+            workflowVersion={workflow.currentVersion}
+          />
         )}
-      </StyledWorkflowWithTemplates>
+      </WorkflowDiagramCanvasEditable>
     </WorkflowVisualizerComponentInstanceContext.Provider>
   );
 };

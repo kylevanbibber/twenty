@@ -1,12 +1,10 @@
 import { TextArea } from '@/ui/input/components/TextArea';
 import { TextInput } from '@/ui/input/components/TextInput';
-import { useSetAtomComponentState } from '@/ui/utilities/state/jotai/hooks/useSetAtomComponentState';
 import {
   type WorkflowStep,
   type WorkflowVersion,
 } from '@/workflow/types/Workflow';
 import { type WorkflowEmailAction } from '@/workflow/types/WorkflowEmailAction';
-import { workflowNodeFocusRequestComponentState } from '@/workflow/workflow-diagram/states/workflowNodeFocusRequestComponentState';
 import { useUpdateWorkflowVersionStep } from '@/workflow/workflow-steps/hooks/useUpdateWorkflowVersionStep';
 import { styled } from '@linaria/react';
 import { Fragment, useEffect, useMemo, useState } from 'react';
@@ -233,20 +231,17 @@ const getEmailModels = (steps: WorkflowStep[]): EmailModel[] => {
 };
 
 type WorkflowEmailTemplatesPanelProps = {
-  shouldFocusWorkflowNodeOnSelect?: boolean;
+  onEmailSelect?: (stepId: string) => void;
   title?: string;
   workflowVersion: WorkflowVersion;
 };
 
 export const WorkflowEmailTemplatesPanel = ({
-  shouldFocusWorkflowNodeOnSelect = false,
+  onEmailSelect,
   title = 'Email templates',
   workflowVersion,
 }: WorkflowEmailTemplatesPanelProps) => {
   const { updateWorkflowVersionStep } = useUpdateWorkflowVersionStep();
-  const setWorkflowNodeFocusRequest = useSetAtomComponentState(
-    workflowNodeFocusRequestComponentState,
-  );
 
   const emails = useMemo(
     () => getEmailModels(workflowVersion.steps ?? []),
@@ -330,12 +325,7 @@ export const WorkflowEmailTemplatesPanel = ({
                 onClick={() => {
                   setIndex(itemIndex);
                   setSaveState('idle');
-                  if (shouldFocusWorkflowNodeOnSelect) {
-                    setWorkflowNodeFocusRequest({
-                      nodeId: email.id,
-                      requestId: Date.now(),
-                    });
-                  }
+                  onEmailSelect?.(email.id);
                 }}
                 type="button"
               >

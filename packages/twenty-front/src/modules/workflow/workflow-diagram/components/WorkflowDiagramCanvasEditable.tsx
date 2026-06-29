@@ -32,10 +32,16 @@ import {
   type Edge,
   type OnNodeDrag,
 } from '@xyflow/react';
-import { useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 import { isDefined } from 'twenty-shared/utils';
 
-export const WorkflowDiagramCanvasEditable = () => {
+type WorkflowDiagramCanvasEditableProps = {
+  children?: ReactNode;
+};
+
+export const WorkflowDiagramCanvasEditable = ({
+  children,
+}: WorkflowDiagramCanvasEditableProps) => {
   const workflowVisualizerWorkflowId = useAtomComponentStateValue(
     workflowVisualizerWorkflowIdComponentState,
   );
@@ -199,7 +205,9 @@ export const WorkflowDiagramCanvasEditable = () => {
         nodesDraggable
         onDeleteEdge={onDeleteEdge}
         startNodeCreation={startNodeCreation}
-      />
+      >
+        {children}
+      </WorkflowDiagramCanvasBase>
 
       <WorkflowDiagramCanvasEditableEffect />
     </ReactFlowProvider>

@@ -21,6 +21,7 @@ import {
   type WidgetConfiguration,
   type WidgetConfigurationType,
   type WorkflowConfiguration,
+  type WorkflowEmailTemplatesConfiguration,
   type WorkflowRunConfiguration,
   type WorkflowVersionConfiguration,
 } from '~/generated-metadata/graphql';
@@ -103,6 +104,12 @@ type WidgetConfigurationTypenameMap = {
   };
   WorkflowConfiguration: Omit<WorkflowConfiguration, 'configurationType'> & {
     configurationType: WidgetConfigurationType.WORKFLOW;
+  };
+  WorkflowEmailTemplatesConfiguration: Omit<
+    WorkflowEmailTemplatesConfiguration,
+    'configurationType'
+  > & {
+    configurationType: WidgetConfigurationType.WORKFLOW_EMAIL_TEMPLATES;
   };
   WorkflowRunConfiguration: Omit<
     WorkflowRunConfiguration,

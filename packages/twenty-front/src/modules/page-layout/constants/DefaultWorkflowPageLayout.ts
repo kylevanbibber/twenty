@@ -9,7 +9,7 @@ import {
 
 /**
  * Default Workflow PageLayout.
- * Specialized layout for workflow visualization and email template editing.
+ * Specialized layout for workflow visualization with fields pinned left.
  */
 export const DEFAULT_WORKFLOW_PAGE_LAYOUT: PageLayout = {
   __typename: 'PageLayout',
@@ -21,15 +21,63 @@ export const DEFAULT_WORKFLOW_PAGE_LAYOUT: PageLayout = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   deletedAt: null,
+  defaultTabToFocusOnMobileAndSidePanelId: 'workflow-tab-flow',
   tabs: [
-    // Flow tab (position 100)
+    // Fields tab (position 100)
+    {
+      __typename: 'PageLayoutTab',
+      applicationId: '',
+      id: 'workflow-tab-fields',
+      isActive: true,
+      title: 'Home',
+      position: 100,
+      layoutMode: PageLayoutTabLayoutMode.VERTICAL_LIST,
+      icon: 'IconHome',
+      pageLayoutId: DEFAULT_WORKFLOW_PAGE_LAYOUT_ID,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      deletedAt: null,
+      widgets: [
+        {
+          __typename: 'PageLayoutWidget',
+          applicationId: '',
+          id: 'workflow-widget-fields',
+          isActive: true,
+          pageLayoutTabId: 'workflow-tab-fields',
+          title: 'Fields',
+          type: WidgetType.FIELDS,
+          objectMetadataId: null,
+          gridPosition: {
+            __typename: 'GridPosition',
+            row: 0,
+            column: 0,
+            rowSpan: 12,
+            columnSpan: 12,
+          },
+          position: {
+            __typename: 'PageLayoutWidgetVerticalListPosition',
+            layoutMode: PageLayoutTabLayoutMode.VERTICAL_LIST,
+            index: 0,
+          },
+          configuration: {
+            __typename: 'FieldsConfiguration',
+            configurationType: WidgetConfigurationType.FIELDS,
+            viewId: null,
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          deletedAt: null,
+        },
+      ],
+    },
+    // Flow tab (position 200)
     {
       __typename: 'PageLayoutTab',
       applicationId: '',
       id: 'workflow-tab-flow',
       isActive: true,
       title: 'Flow',
-      position: 100,
+      position: 200,
       layoutMode: PageLayoutTabLayoutMode.CANVAS,
       icon: 'IconSettings',
       pageLayoutId: DEFAULT_WORKFLOW_PAGE_LAYOUT_ID,
@@ -60,50 +108,6 @@ export const DEFAULT_WORKFLOW_PAGE_LAYOUT: PageLayout = {
           configuration: {
             __typename: 'WorkflowConfiguration',
             configurationType: WidgetConfigurationType.WORKFLOW,
-          },
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          deletedAt: null,
-        },
-      ],
-    },
-    {
-      __typename: 'PageLayoutTab',
-      applicationId: '',
-      id: 'workflow-tab-email-templates',
-      isActive: true,
-      title: 'Email Templates',
-      position: 200,
-      layoutMode: PageLayoutTabLayoutMode.CANVAS,
-      icon: 'IconMail',
-      pageLayoutId: DEFAULT_WORKFLOW_PAGE_LAYOUT_ID,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      deletedAt: null,
-      widgets: [
-        {
-          __typename: 'PageLayoutWidget',
-          applicationId: '',
-          id: 'workflow-widget-email-templates',
-          isActive: true,
-          pageLayoutTabId: 'workflow-tab-email-templates',
-          title: 'Email Templates',
-          type: WidgetType.WORKFLOW_EMAIL_TEMPLATES,
-          objectMetadataId: null,
-          gridPosition: {
-            __typename: 'GridPosition',
-            row: 0,
-            column: 0,
-            rowSpan: 12,
-            columnSpan: 12,
-          },
-          position: {
-            __typename: 'PageLayoutWidgetCanvasPosition',
-            layoutMode: PageLayoutTabLayoutMode.CANVAS,
-          },
-          configuration: {
-            __typename: 'WorkflowEmailTemplatesConfiguration',
-            configurationType: WidgetConfigurationType.WORKFLOW_EMAIL_TEMPLATES,
           },
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),

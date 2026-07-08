@@ -13,11 +13,18 @@ import { type FieldDoubleText } from '@/object-record/record-field/ui/types/Fiel
 import { FieldInputContainer } from '@/ui/field/input/components/FieldInputContainer';
 import { useHotkeysOnFocusedElement } from '@/ui/utilities/hotkey/hooks/useHotkeysOnFocusedElement';
 import { useListenClickOutside } from '@/ui/utilities/pointer-event/hooks/useListenClickOutside';
+import { isNonEmptyString } from '@sniptt/guards';
 import { isDefined } from 'twenty-shared/utils';
 import { splitFullName } from '~/utils/format/spiltFullName';
 import { turnIntoEmptyStringIfWhitespacesOnly } from '~/utils/string/turnIntoEmptyStringIfWhitespacesOnly';
 import { StyledTextInput } from './TextInput';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
+
+const StyledColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
 
 const StyledContainer = styled.div`
   display: flex;
@@ -45,6 +52,15 @@ type DoubleTextInputProps = {
   ) => void;
   onChange?: (newDoubleTextValue: FieldDoubleText) => void;
   onPaste?: (newDoubleTextValue: FieldDoubleText) => void;
+  // Type-ahead suggestions for the focused sub-input, fed by its current value.
+  renderFirstValueSuggestions?: (props: {
+    searchValue: string;
+    onSelect: (value: string) => void;
+  }) => React.ReactNode;
+  renderSecondValueSuggestions?: (props: {
+    searchValue: string;
+    onSelect: (value: string) => void;
+  }) => React.ReactNode;
 };
 
 export const DoubleTextInput = ({
@@ -60,6 +76,8 @@ export const DoubleTextInput = ({
   onTab,
   onChange,
   onPaste,
+  renderFirstValueSuggestions,
+  renderSecondValueSuggestions,
 }: DoubleTextInputProps) => {
   const [firstInternalValue, setFirstInternalValue] = useState(firstValue);
   const [secondInternalValue, setSecondInternalValue] = useState(secondValue);
@@ -192,42 +210,64 @@ export const DoubleTextInput = ({
     event.preventDefault();
   };
 
+  const shouldShowFirstValueSuggestions =
+    focusPosition === 'left' &&
+    isDefined(renderFirstValueSuggestions) &&
+    isNonEmptyString(firstInternalValue);
+
+  const shouldShowSecondValueSuggestions =
+    focusPosition === 'right' &&
+    isDefined(renderSecondValueSuggestions) &&
+    isNonEmptyString(secondInternalValue);
+
   return (
     <FieldInputContainer>
-      <StyledContainer ref={containerRef}>
-        <StyledTextInput
-          autoComplete="off"
-          autoFocus
-          onFocus={() => setFocusPosition('left')}
-          ref={firstValueInputRef}
-          placeholder={firstValuePlaceholder}
-          value={firstInternalValue}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            handleChange(
-              turnIntoEmptyStringIfWhitespacesOnly(event.target.value),
-              secondInternalValue,
-            );
-          }}
-          onPaste={(event: ClipboardEvent<HTMLInputElement>) =>
-            handleOnPaste(event)
-          }
-          onClick={handleClickToPreventParentClickEvents}
-        />
-        <StyledTextInput
-          autoComplete="off"
-          onFocus={() => setFocusPosition('right')}
-          ref={secondValueInputRef}
-          placeholder={secondValuePlaceholder}
-          value={secondInternalValue}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            handleChange(
-              firstInternalValue,
-              turnIntoEmptyStringIfWhitespacesOnly(event.target.value),
-            );
-          }}
-          onClick={handleClickToPreventParentClickEvents}
-        />
-      </StyledContainer>
+      <StyledColumn ref={containerRef}>
+        <StyledContainer>
+          <StyledTextInput
+            autoComplete="off"
+            autoFocus
+            onFocus={() => setFocusPosition('left')}
+            ref={firstValueInputRef}
+            placeholder={firstValuePlaceholder}
+            value={firstInternalValue}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              handleChange(
+                turnIntoEmptyStringIfWhitespacesOnly(event.target.value),
+                secondInternalValue,
+              );
+            }}
+            onPaste={(event: ClipboardEvent<HTMLInputElement>) =>
+              handleOnPaste(event)
+            }
+            onClick={handleClickToPreventParentClickEvents}
+          />
+          <StyledTextInput
+            autoComplete="off"
+            onFocus={() => setFocusPosition('right')}
+            ref={secondValueInputRef}
+            placeholder={secondValuePlaceholder}
+            value={secondInternalValue}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              handleChange(
+                firstInternalValue,
+                turnIntoEmptyStringIfWhitespacesOnly(event.target.value),
+              );
+            }}
+            onClick={handleClickToPreventParentClickEvents}
+          />
+        </StyledContainer>
+        {shouldShowFirstValueSuggestions &&
+          renderFirstValueSuggestions({
+            searchValue: firstInternalValue,
+            onSelect: (value) => handleChange(value, secondInternalValue),
+          })}
+        {shouldShowSecondValueSuggestions &&
+          renderSecondValueSuggestions({
+            searchValue: secondInternalValue,
+            onSelect: (value) => handleChange(firstInternalValue, value),
+          })}
+      </StyledColumn>
     </FieldInputContainer>
   );
 };

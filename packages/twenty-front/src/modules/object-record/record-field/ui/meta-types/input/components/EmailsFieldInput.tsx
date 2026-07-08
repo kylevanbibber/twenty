@@ -1,6 +1,8 @@
 import { FieldInputEventContext } from '@/object-record/record-field/ui/contexts/FieldInputEventContext';
 import { useEmailsField } from '@/object-record/record-field/ui/meta-types/hooks/useEmailsField';
+import { useFieldInputObjectNameSingular } from '@/object-record/record-field/ui/meta-types/hooks/useFieldInputObjectNameSingular';
 import { EmailsFieldMenuItem } from '@/object-record/record-field/ui/meta-types/input/components/EmailsFieldMenuItem';
+import { FieldValueSuggestions } from '@/object-record/record-field/ui/meta-types/input/components/FieldValueSuggestions';
 import { MULTI_ITEM_FIELD_INPUT_DROPDOWN_ID_PREFIX } from '@/object-record/record-field/ui/meta-types/input/constants/MultiItemFieldInputDropdownClickOutsideId';
 import { recordFieldInputIsFieldInErrorComponentState } from '@/object-record/record-field/ui/states/recordFieldInputIsFieldInErrorComponentState';
 import { type FieldEmailsValue } from '@/object-record/record-field/ui/types/FieldMetadata';
@@ -9,6 +11,7 @@ import { emailSchema } from '@/object-record/record-field/ui/validation-schemas/
 import { useSetAtomComponentState } from '@/ui/utilities/state/jotai/hooks/useSetAtomComponentState';
 import { useLingui } from '@lingui/react/macro';
 import { useCallback, useContext, useMemo } from 'react';
+import { isNonEmptyString } from '@sniptt/guards';
 import { MULTI_ITEM_FIELD_DEFAULT_MAX_VALUES } from 'twenty-shared/constants';
 import { isDefined } from 'twenty-shared/utils';
 import { FieldMetadataType } from '~/generated-metadata/graphql';
@@ -102,6 +105,8 @@ export const EmailsFieldInput = () => {
     fieldDefinition.metadata.settings?.maxNumberOfValues ??
     MULTI_ITEM_FIELD_DEFAULT_MAX_VALUES;
 
+  const objectNameSingular = useFieldInputObjectNameSingular();
+
   return (
     <MultiItemFieldInput
       items={emails}
@@ -134,6 +139,19 @@ export const EmailsFieldInput = () => {
       )}
       onError={handleError}
       maxItemCount={maxNumberOfValues}
+      renderSuggestions={
+        isNonEmptyString(objectNameSingular)
+          ? ({ searchValue, onSelect }) => (
+              <FieldValueSuggestions
+                objectNameSingular={objectNameSingular}
+                fieldName={fieldDefinition.metadata.fieldName}
+                compositeSubFieldName="primaryEmail"
+                searchValue={searchValue}
+                onSelect={onSelect}
+              />
+            )
+          : undefined
+      }
     />
   );
 };

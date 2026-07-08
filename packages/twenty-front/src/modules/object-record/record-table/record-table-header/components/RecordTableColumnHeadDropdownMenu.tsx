@@ -3,16 +3,26 @@ import { DropdownMenuSeparator } from '@/ui/layout/dropdown/components/DropdownM
 
 import { isFieldMetadataItemFilterableAndSortableSelector } from '@/object-metadata/states/isFieldMetadataItemFilterableAndSortableSelector';
 import { isFieldMetadataItemLabelIdentifierSelector } from '@/object-metadata/states/isFieldMetadataItemLabelIdentifierSelector';
+import { formatFieldMetadataItemAsFieldDefinition } from '@/object-metadata/utils/formatFieldMetadataItemAsFieldDefinition';
 import { useChangeRecordFieldVisibility } from '@/object-record/record-field/hooks/useChangeRecordFieldVisibility';
 import { type RecordField } from '@/object-record/record-field/types/RecordField';
 import { useHandleToggleColumnSort } from '@/object-record/record-index/hooks/useHandleToggleColumnSort';
 import { useRecordTableContextOrThrow } from '@/object-record/record-table/contexts/RecordTableContext';
 import { useMoveTableColumn } from '@/object-record/record-table/hooks/useMoveTableColumn';
 import { useOpenRecordFilterChipFromTableHeader } from '@/object-record/record-table/record-table-header/hooks/useOpenRecordFilterChipFromTableHeader';
+import { isRecordTableColumnHeadersReadOnlyComponentState } from '@/object-record/record-table/states/isRecordTableColumnHeadersReadOnlyComponentState';
+import { selectedRowIdsComponentSelector } from '@/object-record/record-table/states/selectors/selectedRowIdsComponentSelector';
+import { InlineBulkEditFieldContent } from '@/object-record/record-update-multiple/components/InlineBulkEditFieldContent';
+import { useApplyInlineBulkFieldEdit } from '@/object-record/record-update-multiple/hooks/useApplyInlineBulkFieldEdit';
+import { shouldDisplayFormMultiEditField } from '@/object-record/record-update-multiple/utils/shouldDisplayFormMultiEditField';
 import { DropdownContent } from '@/ui/layout/dropdown/components/DropdownContent';
 import { useCloseDropdown } from '@/ui/layout/dropdown/hooks/useCloseDropdown';
+import { useAtomComponentSelectorValue } from '@/ui/utilities/state/jotai/hooks/useAtomComponentSelectorValue';
+import { useAtomComponentStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomComponentStateValue';
 import { useToggleScrollWrapper } from '@/ui/utilities/scroll/hooks/useToggleScrollWrapper';
 import { styled } from '@linaria/react';
+import { useState } from 'react';
+import { isDefined } from 'twenty-shared/utils';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 import { useLingui } from '@lingui/react/macro';
 import { useAtomFamilySelectorValue } from '@/ui/utilities/state/jotai/hooks/useAtomFamilySelectorValue';
@@ -21,6 +31,7 @@ import {
   IconArrowRight,
   IconEyeOff,
   IconFilter,
+  IconPencil,
   IconSortDescending,
 } from 'twenty-ui/icon';
 import { MenuItem } from 'twenty-ui/navigation';
@@ -43,7 +54,15 @@ export const RecordTableColumnHeadDropdownMenu = ({
   const { toggleScrollXWrapper, toggleScrollYWrapper } =
     useToggleScrollWrapper();
 
-  const { visibleRecordFields } = useRecordTableContextOrThrow();
+  const {
+    visibleRecordFields,
+    recordTableId,
+    objectMetadataItem,
+    objectNameSingular,
+    objectPermissions,
+  } = useRecordTableContextOrThrow();
+
+  const [mode, setMode] = useState<'menu' | 'bulk-edit'>('menu');
 
   const isLabelIdentifier = useAtomFamilySelectorValue(
     isFieldMetadataItemLabelIdentifierSelector,
@@ -62,8 +81,6 @@ export const RecordTableColumnHeadDropdownMenu = ({
   const canMoveRight =
     recordField.fieldMetadataItemId !==
       lastVisibleRecordField?.fieldMetadataItemId && canMove;
-
-  const { recordTableId } = useRecordTableContextOrThrow();
 
   const { moveTableColumn } = useMoveTableColumn({
     recordTableId,
@@ -130,10 +147,87 @@ export const RecordTableColumnHeadDropdownMenu = ({
     (isFilterable || isSortable) && isLabelIdentifier !== true;
   const canHide = isLabelIdentifier !== true;
 
+  const selectedRowIds = useAtomComponentSelectorValue(
+    selectedRowIdsComponentSelector,
+    recordTableId,
+  );
+
+  const isRecordTableColumnHeadersReadOnly = useAtomComponentStateValue(
+    isRecordTableColumnHeadersReadOnlyComponentState,
+    recordTableId,
+  );
+
+  const fieldMetadataItem = objectMetadataItem.fields.find(
+    (field) => field.id === recordField.fieldMetadataItemId,
+  );
+
+  const { applyBulkEdit, selectedCount } = useApplyInlineBulkFieldEdit({
+    objectNameSingular,
+    recordTableId,
+  });
+
+  const canBulkEdit =
+    selectedRowIds.length > 1 &&
+    objectPermissions.canUpdateObjectRecords === true &&
+    !isRecordTableColumnHeadersReadOnly &&
+    isDefined(fieldMetadataItem) &&
+    shouldDisplayFormMultiEditField(fieldMetadataItem);
+
+  const bulkEditFieldDefinition = isDefined(fieldMetadataItem)
+    ? formatFieldMetadataItemAsFieldDefinition({
+        field: fieldMetadataItem,
+        objectMetadataItem,
+        showLabel: false,
+      })
+    : undefined;
+
+  const handleBulkEditClick = () => {
+    setMode('bulk-edit');
+  };
+
+  const handleBulkEditApply = async (value: unknown) => {
+    if (!isDefined(fieldMetadataItem) || !isDefined(bulkEditFieldDefinition)) {
+      return;
+    }
+
+    closeDropdownAndToggleScroll();
+
+    await applyBulkEdit({
+      fieldMetadataItem,
+      fieldDefinition: bulkEditFieldDefinition,
+      value,
+    });
+  };
+
+  if (mode === 'bulk-edit' && isDefined(bulkEditFieldDefinition)) {
+    return (
+      <DropdownContent>
+        <StyledDropdownMenuItemsContainerWrapper>
+          <InlineBulkEditFieldContent
+            fieldDefinition={bulkEditFieldDefinition}
+            selectedCount={selectedCount}
+            onApply={handleBulkEditApply}
+            onCancel={() => setMode('menu')}
+          />
+        </StyledDropdownMenuItemsContainerWrapper>
+      </DropdownContent>
+    );
+  }
+
   return (
     <DropdownContent>
       <StyledDropdownMenuItemsContainerWrapper>
         <DropdownMenuItemsContainer>
+          {canBulkEdit && (
+            <>
+              <MenuItem
+                LeftIcon={IconPencil}
+                onClick={handleBulkEditClick}
+                text={t`Set value for ${selectedCount} selected`}
+              />
+              <DropdownMenuSeparator />
+            </>
+          )}
           {isFilterable && (
             <MenuItem
               LeftIcon={IconFilter}

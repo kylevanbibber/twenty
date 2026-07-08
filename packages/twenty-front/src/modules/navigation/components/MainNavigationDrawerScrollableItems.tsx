@@ -14,7 +14,11 @@ import { useLocation } from 'react-router-dom';
 
 import { AppPath } from 'twenty-shared/types';
 import { getAppPath, isDefined } from 'twenty-shared/utils';
-import { IconMail, IconSettingsAutomation } from 'twenty-ui/icon';
+import {
+  IconCalendarTime,
+  IconMail,
+  IconSettingsAutomation,
+} from 'twenty-ui/icon';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
 const FavoritesSectionDispatcher = lazy(() =>
@@ -87,6 +91,12 @@ export const MainNavigationDrawerScrollableItems = () => {
               active={location.pathname === '/objects/workflows'}
             />
           )}
+        <NavigationDrawerItem
+          label="Email & Calendar"
+          to={AppPath.Communications}
+          Icon={IconCalendarTime}
+          active={location.pathname === AppPath.Communications}
+        />
         <NavigationDrawerItem
           label="Email Templates"
           to="/campaign-templates"

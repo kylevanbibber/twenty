@@ -150,7 +150,7 @@ const mockOpportunityRecord: ObjectRecord = {
   __typename: 'Opportunity',
   id: TEST_OPPORTUNITY_RECORD_ID,
   name: 'Enterprise Deal',
-  stage: 'PROPOSAL',
+  stage: 'INVOICE',
   amount: {
     __typename: 'Currency',
     amountMicros: 500000000000,

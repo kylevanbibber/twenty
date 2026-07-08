@@ -22,6 +22,8 @@ export abstract class GoogleAPIsOauthCommonStrategy extends PassportStrategy(
       clientSecret: twentyConfigService.get('AUTH_GOOGLE_CLIENT_SECRET'),
       callbackURL: twentyConfigService.get('AUTH_GOOGLE_APIS_CALLBACK_URL'),
       scope: scopes,
+      accessType: 'offline',
+      prompt: 'consent',
       passReqToCallback: true,
     });
   }

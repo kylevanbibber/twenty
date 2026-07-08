@@ -1,13 +1,13 @@
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { formatFieldMetadataItemAsFieldDefinition } from '@/object-metadata/utils/formatFieldMetadataItemAsFieldDefinition';
 import { FormFieldInput } from '@/object-record/record-field/ui/components/FormFieldInput';
-import { isFieldRelation } from '@/object-record/record-field/ui/types/guards/isFieldRelation';
 import { type UpdateMultipleRecordsState } from '@/object-record/record-update-multiple/components/UpdateMultipleRecordsContainer';
-import { isUpdateRecordValueEmpty } from '@/object-record/record-update-multiple/utils/isUpdateRecordValueEmpty';
+import {
+  getMultiEditFieldInputName,
+  normalizeMultiEditValue,
+} from '@/object-record/record-update-multiple/utils/getMultiEditUpdateInput';
 import { shouldDisplayFormMultiEditField } from '@/object-record/record-update-multiple/utils/shouldDisplayFormMultiEditField';
 import { styled } from '@linaria/react';
-import { FieldMetadataType } from 'twenty-shared/types';
-import { computeRelationGqlFieldJoinColumnName } from 'twenty-shared/utils';
 import { Section } from 'twenty-ui/layout';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 
@@ -56,25 +56,18 @@ export const UpdateMultipleRecordsForm = ({
     <StyledSectionContainer>
       <Section>
         {fieldsWithDefinitions.map(({ fieldMetadataItem, fieldDefinition }) => {
-          const fieldName = fieldDefinition.metadata.fieldName;
-          const isRelation = isFieldRelation(fieldDefinition);
-          const fieldNameOrRelationIdName =
-            isRelation && fieldMetadataItem.type === FieldMetadataType.RELATION
-              ? computeRelationGqlFieldJoinColumnName({
-                  name: fieldMetadataItem.name,
-                })
-              : fieldName;
+          const fieldNameOrRelationIdName = getMultiEditFieldInputName({
+            fieldMetadataItem,
+            fieldDefinition,
+          });
 
           const value = values[fieldNameOrRelationIdName];
 
           const handleValueChange = (newValue: any) => {
-            if (newValue === null) {
-              onChange(fieldNameOrRelationIdName, null);
-            } else if (isUpdateRecordValueEmpty(newValue)) {
-              onChange(fieldNameOrRelationIdName, undefined);
-            } else {
-              onChange(fieldNameOrRelationIdName, newValue);
-            }
+            onChange(
+              fieldNameOrRelationIdName,
+              normalizeMultiEditValue(newValue),
+            );
           };
 
           return (

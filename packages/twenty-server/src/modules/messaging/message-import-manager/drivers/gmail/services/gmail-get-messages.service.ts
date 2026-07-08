@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
-import { batchFetchImplementation } from '@jrmdayn/googleapis-batcher';
 import { isNonEmptyString } from '@sniptt/guards';
 import { type gmail_v1 as gmailV1, google } from 'googleapis';
 import { isDefined } from 'twenty-shared/utils';
@@ -14,10 +13,10 @@ import { filterGmailMessagesByFolderPolicy } from 'src/modules/messaging/message
 import { parseAndFormatGmailMessage } from 'src/modules/messaging/message-import-manager/drivers/gmail/utils/parse-and-format-gmail-message.util';
 import { type MessageWithParticipants } from 'src/modules/messaging/message-import-manager/types/message';
 
-const GMAIL_BATCH_REQUEST_MAX_SIZE = 50;
-
 @Injectable()
 export class GmailGetMessagesService {
+  private readonly logger = new Logger(GmailGetMessagesService.name);
+
   constructor(
     private readonly googleOAuth2ClientProvider: GoogleOAuth2ClientProvider,
     private readonly gmailMessagesImportErrorHandler: GmailMessagesImportErrorHandler,
@@ -38,18 +37,13 @@ export class GmailGetMessagesService {
       connectedAccount.id,
     );
 
-    const batchedFetchImplementation = batchFetchImplementation({
-      maxBatchSize: GMAIL_BATCH_REQUEST_MAX_SIZE,
-    });
-
-    const batchedGmailClient = google.gmail({
+    const gmailClient = google.gmail({
       version: 'v1',
       auth: oAuth2Client,
-      fetchImplementation: batchedFetchImplementation,
     });
 
     const fetchedMessages = await this.fetchMessages(
-      batchedGmailClient,
+      gmailClient,
       messageIds,
       connectedAccount,
     );
@@ -101,7 +95,7 @@ export class GmailGetMessagesService {
 
     await Promise.all(
       threadIds.map((threadId) =>
-        batchedGmailClient.users.threads
+        gmailClient.users.threads
           .get({
             userId: 'me',
             id: threadId,
@@ -143,7 +137,7 @@ export class GmailGetMessagesService {
     const threadSiblings =
       missingMessageIds.length > 0
         ? await this.fetchMessages(
-            batchedGmailClient,
+            gmailClient,
             missingMessageIds,
             connectedAccount,
           )
@@ -175,6 +169,14 @@ export class GmailGetMessagesService {
     return results
       .map(({ messageId, data, error }) => {
         if (error) {
+          if (this.isSkippableMessageFetchError(error)) {
+            this.logger.warn(
+              `Gmail: Skipping message ${messageId} after transient fetch failure: ${error instanceof Error ? error.message : String(error)}`,
+            );
+
+            return undefined;
+          }
+
           this.gmailMessagesImportErrorHandler.handleError(error, messageId);
 
           return undefined;
@@ -186,5 +188,19 @@ export class GmailGetMessagesService {
         );
       })
       .filter(isDefined);
+  }
+
+  private isSkippableMessageFetchError(error: unknown): boolean {
+    if (error === null || typeof error !== 'object') {
+      return false;
+    }
+
+    const code = 'code' in error ? error.code : undefined;
+    const message = 'message' in error ? error.message : undefined;
+
+    return (
+      code === 'ERR_STREAM_PREMATURE_CLOSE' ||
+      (typeof message === 'string' && message.includes('Premature close'))
+    );
   }
 }

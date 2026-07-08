@@ -204,7 +204,7 @@ export const oneSucceededWorkflowRunQueryResult = {
                 objectName: 'opportunity',
                 objectRecord: {
                   name: 'Opportunity with {{trigger.properties.after.name}}',
-                  stage: 'NEW',
+                  stage: 'LEAD',
                 },
               },
               outputSchema: {
@@ -4427,7 +4427,7 @@ export const oneSucceededWorkflowRunQueryResult = {
           result: {
             id: 'f76b6058-2c8b-4bfa-86c1-4a4d39de3ee9',
             name: 'Opportunity with ',
-            stage: 'NEW',
+            stage: 'LEAD',
             amount: {
               amountMicros: null,
               currencyCode: '',
@@ -4671,7 +4671,7 @@ export const oneSucceededWorkflowRunQueryResult = {
               objectName: 'opportunity',
               objectRecord: {
                 name: 'Opportunity with {{trigger.properties.after.name}}',
-                stage: 'NEW',
+                stage: 'LEAD',
               },
             },
             outputSchema: {

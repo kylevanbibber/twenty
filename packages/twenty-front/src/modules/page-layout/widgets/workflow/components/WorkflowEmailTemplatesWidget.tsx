@@ -1,3 +1,3 @@
-export const WorkflowEmailTemplatesWidget = () => {
+export const WorkflowEmailTemplatesWidgetEffect = () => {
   return null;
 };

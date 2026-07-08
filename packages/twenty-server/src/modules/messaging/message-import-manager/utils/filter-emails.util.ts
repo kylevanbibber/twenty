@@ -3,7 +3,6 @@ import { isDefined } from 'twenty-shared/utils';
 
 import { type MessageWithParticipants } from 'src/modules/messaging/message-import-manager/types/message';
 import { filterOutBlocklistedMessages } from 'src/modules/messaging/message-import-manager/utils/filter-out-blocklisted-messages.util';
-import { filterOutIcsAttachments } from 'src/modules/messaging/message-import-manager/utils/filter-out-ics-attachments.util';
 import { filterOutInternals } from 'src/modules/messaging/message-import-manager/utils/filter-out-internals.util';
 import { isGroupEmail } from 'src/modules/messaging/message-import-manager/utils/is-group-email';
 import { isMessageSenderMatchingHandles } from 'src/modules/messaging/message-import-manager/utils/is-message-sender-matching-handles.util';
@@ -17,11 +16,9 @@ export const filterEmails = (
   excludeGroupEmails: boolean = true,
   isInternalMessagesImportEnabled: boolean = false,
 ) => {
-  const messagesWithoutIcsAttachments = filterOutIcsAttachments(messages);
-
   const messagesWithoutBlocklisted = filterOutBlocklistedMessages(
     [primaryHandle, ...handleAliases],
-    messagesWithoutIcsAttachments,
+    messages,
     blocklist,
   );
 

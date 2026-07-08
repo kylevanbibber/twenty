@@ -125,7 +125,7 @@ describe('useFieldPreviewValue', () => {
     );
 
     // Then
-    expect(result.current).toBe('NEW');
+    expect(result.current).toBe('LEAD');
   });
 
   it("returns the field's preview value for a Multi-Select field", () => {

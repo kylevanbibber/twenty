@@ -15,10 +15,12 @@ export const useResolveDefaultEmailRecipient = ({
   const isCompany = objectNameSingular === CoreObjectNameSingular.Company;
   const isOpportunity =
     objectNameSingular === CoreObjectNameSingular.Opportunity;
+  const isLead = objectNameSingular === 'lead';
 
   const skipPerson = !isPerson || !recordId;
   const skipCompanyPeople = !isCompany || !recordId;
   const skipOpportunity = !isOpportunity || !recordId;
+  const skipLead = !isLead || !recordId;
 
   const { record: personRecord, loading: personLoading } = useFindOneRecord({
     objectNameSingular: CoreObjectNameSingular.Person,
@@ -47,18 +49,28 @@ export const useResolveDefaultEmailRecipient = ({
       skip: skipOpportunity,
     });
 
+  const { record: leadRecord, loading: leadLoading } = useFindOneRecord({
+    objectNameSingular: 'lead',
+    objectRecordId: recordId ?? '',
+    recordGqlFields: { id: true, email: { primaryEmail: true } },
+    skip: skipLead,
+  });
+
   const defaultTo = isPerson
     ? (personRecord?.emails?.primaryEmail ?? '')
     : isCompany
       ? (companyPeople[0]?.emails?.primaryEmail ?? '')
       : isOpportunity
         ? (opportunityRecord?.pointOfContact?.emails?.primaryEmail ?? '')
-        : '';
+        : isLead
+          ? (leadRecord?.email?.primaryEmail ?? '')
+          : '';
 
   const loading =
     (isPerson && personLoading) ||
     (isCompany && companyPeopleLoading) ||
-    (isOpportunity && opportunityLoading);
+    (isOpportunity && opportunityLoading) ||
+    (isLead && leadLoading);
 
   return { defaultTo, loading };
 };

@@ -1737,42 +1737,56 @@ export const mockedStandardObjectMetadataQueryResult: ObjectMetadataItemsQuery =
               "isUnique": false,
               "createdAt": "2026-04-10T08:55:56.200Z",
               "updatedAt": "2026-04-10T08:55:56.200Z",
-              "defaultValue": "'NEW'",
+              "defaultValue": "'LEAD'",
               "options": [
                 {
                   "id": "20202020-8e01-4afd-9c39-d2063097587a",
                   "color": "red",
-                  "label": "New",
-                  "value": "NEW",
+                  "label": "Lead",
+                  "value": "LEAD",
                   "position": 0
                 },
                 {
                   "id": "20202020-e685-4671-ac32-26d304dacb6e",
                   "color": "purple",
-                  "label": "Screening",
-                  "value": "SCREENING",
+                  "label": "Drip",
+                  "value": "DRIP",
                   "position": 1
                 },
                 {
                   "id": "20202020-dde9-4acc-b5ca-f6531a8ecb4a",
                   "color": "sky",
-                  "label": "Meeting",
-                  "value": "MEETING",
+                  "label": "Quote",
+                  "value": "QUOTE",
                   "position": 2
                 },
                 {
                   "id": "20202020-696e-4f6b-91bc-f413e9b2f654",
                   "color": "turquoise",
-                  "label": "Proposal",
-                  "value": "PROPOSAL",
+                  "label": "Invoice",
+                  "value": "INVOICE",
                   "position": 3
                 },
                 {
                   "id": "20202020-0bb5-4a6f-a8b2-774bbad21104",
                   "color": "yellow",
-                  "label": "Customer",
-                  "value": "CUSTOMER",
+                  "label": "Paid",
+                  "value": "PAID",
                   "position": 4
+                },
+                {
+                  "id": "20202020-4888-4271-ae17-0fd0f8631421",
+                  "color": "green",
+                  "label": "Shipped",
+                  "value": "SHIPPED",
+                  "position": 5
+                },
+                {
+                  "id": "20202020-02da-4698-8d65-97fc745a56fd",
+                  "color": "blue",
+                  "label": "Received",
+                  "value": "RECEIVED",
+                  "position": 6
                 }
               ],
               "settings": null,

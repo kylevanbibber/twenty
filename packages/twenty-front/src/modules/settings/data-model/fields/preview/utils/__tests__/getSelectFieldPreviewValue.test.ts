@@ -42,7 +42,7 @@ describe('getSelectFieldPreviewValue', () => {
 
   it("returns the defaultValue as an option value if a valid defaultValue is found in the field's metadata", () => {
     // Given
-    const defaultValue = "'NEW'";
+    const defaultValue = "'LEAD'";
     const fieldMetadataItemWithDefaultValue = {
       ...fieldMetadataItem,
       defaultValue,
@@ -54,7 +54,7 @@ describe('getSelectFieldPreviewValue', () => {
     });
 
     // Then
-    expect(previewValue).toBe('NEW');
+    expect(previewValue).toBe('LEAD');
   });
 
   it("returns the first option value if no defaultValue was found in the field's metadata", () => {
@@ -71,7 +71,7 @@ describe('getSelectFieldPreviewValue', () => {
     });
 
     // Then
-    expect(previewValue).toBe('NEW');
+    expect(previewValue).toBe('LEAD');
     expect(previewValue).toBe(
       fieldMetadataItemWithDefaultValue.options?.[0]?.value,
     );
@@ -91,7 +91,7 @@ describe('getSelectFieldPreviewValue', () => {
     });
 
     // Then
-    expect(previewValue).toBe('NEW');
+    expect(previewValue).toBe('LEAD');
     expect(previewValue).toBe(
       fieldMetadataItemWithDefaultValue.options?.[0]?.value,
     );

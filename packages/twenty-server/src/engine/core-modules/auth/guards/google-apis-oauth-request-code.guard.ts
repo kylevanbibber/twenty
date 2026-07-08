@@ -26,7 +26,9 @@ export class GoogleAPIsOauthRequestCodeGuard extends AuthGuard('google-apis') {
     private readonly workspaceDomainsService: WorkspaceDomainsService,
   ) {
     super({
-      prompt: 'select_account',
+      accessType: 'offline',
+      includeGrantedScopes: true,
+      prompt: 'consent select_account',
     });
   }
 

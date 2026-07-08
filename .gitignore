@@ -1,6 +1,8 @@
 **/**/.env
 .DS_Store
 /.idea
+# Personal, machine-specific VSCode multi-root workspace files
+*.code-workspace
 .claude/*
 !.claude/settings.json
 .cursor/debug-*.log

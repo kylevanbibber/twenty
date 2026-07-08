@@ -8,11 +8,18 @@ import { isDoubleTextFieldEmpty } from '@/object-record/record-field/ui/meta-typ
 import { RecordFieldComponentInstanceContext } from '@/object-record/record-field/ui/states/contexts/RecordFieldComponentInstanceContext';
 
 import { FieldInputEventContext } from '@/object-record/record-field/ui/contexts/FieldInputEventContext';
+import { useFieldInputObjectNameSingular } from '@/object-record/record-field/ui/meta-types/hooks/useFieldInputObjectNameSingular';
+import { FieldValueSuggestions } from '@/object-record/record-field/ui/meta-types/input/components/FieldValueSuggestions';
 import { useAvailableComponentInstanceIdOrThrow } from '@/ui/utilities/state/component-state/hooks/useAvailableComponentInstanceIdOrThrow';
+import { isNonEmptyString } from '@sniptt/guards';
 import { useContext } from 'react';
 
 export const FullNameFieldInput = () => {
-  const { draftValue, setDraftValue } = useFullNameField();
+  const { draftValue, setDraftValue, fieldDefinition } = useFullNameField();
+
+  const objectNameSingular = useFieldInputObjectNameSingular();
+  const hasSuggestions = isNonEmptyString(objectNameSingular);
+  const fieldName = fieldDefinition.metadata.fieldName;
 
   const { onEnter, onEscape, onClickOutside, onTab, onShiftTab } = useContext(
     FieldInputEventContext,
@@ -86,6 +93,32 @@ export const FullNameFieldInput = () => {
       onTab={handleTab}
       onPaste={handlePaste}
       onChange={handleChange}
+      renderFirstValueSuggestions={
+        hasSuggestions
+          ? ({ searchValue, onSelect }) => (
+              <FieldValueSuggestions
+                objectNameSingular={objectNameSingular}
+                fieldName={fieldName}
+                compositeSubFieldName="firstName"
+                searchValue={searchValue}
+                onSelect={onSelect}
+              />
+            )
+          : undefined
+      }
+      renderSecondValueSuggestions={
+        hasSuggestions
+          ? ({ searchValue, onSelect }) => (
+              <FieldValueSuggestions
+                objectNameSingular={objectNameSingular}
+                fieldName={fieldName}
+                compositeSubFieldName="lastName"
+                searchValue={searchValue}
+                onSelect={onSelect}
+              />
+            )
+          : undefined
+      }
     />
   );
 };

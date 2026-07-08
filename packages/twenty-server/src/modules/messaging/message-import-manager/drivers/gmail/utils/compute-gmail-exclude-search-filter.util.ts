@@ -24,7 +24,7 @@ export const computeGmailExcludeSearchFilter = (
   ).join(' ');
 
   if (messageFolderImportPolicy === MessageFolderImportPolicy.ALL_FOLDERS) {
-    return allExclusions;
+    return systemExclusions;
   }
 
   const syncedFolders = messageFolders.filter((folder) => folder.isSynced);
@@ -34,7 +34,7 @@ export const computeGmailExcludeSearchFilter = (
     messageFolders.every((folder) => folder.isSynced);
 
   if (allFoldersSynced) {
-    return allExclusions;
+    return systemExclusions;
   }
 
   const labelNamesToInclude = syncedFolders

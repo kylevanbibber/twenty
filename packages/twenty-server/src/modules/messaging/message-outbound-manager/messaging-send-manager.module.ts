@@ -16,6 +16,7 @@ import { ImapSmtpMessageOutboundService } from 'src/modules/messaging/message-ou
 import { MicrosoftMessageOutboundService } from 'src/modules/messaging/message-outbound-manager/drivers/microsoft/services/microsoft-message-outbound.service';
 import { MessagingMessageOutboundService } from 'src/modules/messaging/message-outbound-manager/services/messaging-message-outbound.service';
 import { SendEmailService } from 'src/modules/messaging/message-outbound-manager/services/send-email.service';
+import { EmailMessageActionService } from 'src/modules/messaging/message-outbound-manager/services/email-message-action.service';
 import { SentMessagePersistenceService } from 'src/modules/messaging/message-outbound-manager/services/sent-message-persistence.service';
 
 @Module({
@@ -38,12 +39,14 @@ import { SentMessagePersistenceService } from 'src/modules/messaging/message-out
     EmailGroupMessageOutboundService,
     MessagingMessageOutboundService,
     SendEmailService,
+    EmailMessageActionService,
     SentMessagePersistenceService,
     provideWorkspaceScopedRepository(EmailingDomainEntity),
   ],
   exports: [
     MessagingMessageOutboundService,
     SendEmailService,
+    EmailMessageActionService,
     SentMessagePersistenceService,
   ],
 })

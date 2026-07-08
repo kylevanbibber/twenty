@@ -53,6 +53,12 @@ type MultiItemFieldInputProps<T> = {
   fieldMetadataType: FieldMetadataType;
   renderInput?: MultiItemBaseInputProps['renderInput'];
   maxItemCount?: number;
+  // Renders a type-ahead suggestions list under the item input, fed by the
+  // value currently being typed. Selecting a suggestion commits it as an item.
+  renderSuggestions?: (props: {
+    searchValue: string;
+    onSelect: (value: string) => void;
+  }) => React.ReactNode;
 };
 
 // Todo: the API of this component does not look healthy: we have renderInput, renderItem, formatInput, ...
@@ -73,6 +79,7 @@ export const MultiItemFieldInput = <T,>({
   renderInput,
   onClickOutside,
   maxItemCount,
+  renderSuggestions,
 }: MultiItemFieldInputProps<T>) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -233,6 +240,37 @@ export const MultiItemFieldInput = <T,>({
     setInputValue('');
   };
 
+  const handleSelectSuggestion = (suggestion: string) => {
+    const { sanitizedInput, isValid, errorMessage } = sanitizeAndValidateInput(
+      suggestion,
+      validateInput,
+    );
+
+    if (!isValid) {
+      onError?.(true, items);
+      setErrorData({ isValid: false, errorMessage });
+      return;
+    }
+
+    const editingIndex = isAddingNewItem ? null : itemToEditIndex;
+
+    const updatedItems = computeUpdatedMultiItemFieldItems({
+      sanitizedInput,
+      items,
+      editingIndex,
+      singleItemMode: shouldAutoEnterBecauseOnlyOneItemIsAllowed,
+      formatInput,
+    });
+
+    onChange(updatedItems);
+    if (shouldAutoEnterBecauseOnlyOneItemIsAllowed) {
+      onEnter(updatedItems);
+    }
+    setIsInputDisplayed(false);
+    setIsAddingNewItem(false);
+    setInputValue('');
+  };
+
   const showInputIfNoItemsRemain = (remainingItems: T[]) => {
     const shouldShowInput =
       remainingItems.length === 0 && !isDefined(onAddClick);
@@ -341,30 +379,37 @@ export const MultiItemFieldInput = <T,>({
           </>
         )}
       {isInputDisplayed ? (
-        <MultiItemBaseInput
-          instanceId={instanceId}
-          autoFocus={!shouldShowSearch}
-          placeholder={placeholder}
-          value={inputValue}
-          hasError={!errorData.isValid}
-          renderInput={renderInput}
-          onEscape={handleEscape}
-          onChange={(value) => {
-            value
-              ? handleInputChange(turnIntoEmptyStringIfWhitespacesOnly(value))
-              : handleInputChange('');
-          }}
-          onEnter={handleEnter}
-          hasItem={!!items.length}
-          rightComponent={
-            items.length ? (
-              <LightIconButton
-                Icon={isAddingNewItem ? IconPlus : IconCheck}
-                onClick={handleEnter}
-              />
-            ) : null
-          }
-        />
+        <>
+          <MultiItemBaseInput
+            instanceId={instanceId}
+            autoFocus={!shouldShowSearch}
+            placeholder={placeholder}
+            value={inputValue}
+            hasError={!errorData.isValid}
+            renderInput={renderInput}
+            onEscape={handleEscape}
+            onChange={(value) => {
+              value
+                ? handleInputChange(turnIntoEmptyStringIfWhitespacesOnly(value))
+                : handleInputChange('');
+            }}
+            onEnter={handleEnter}
+            hasItem={!!items.length}
+            rightComponent={
+              items.length ? (
+                <LightIconButton
+                  Icon={isAddingNewItem ? IconPlus : IconCheck}
+                  onClick={handleEnter}
+                />
+              ) : null
+            }
+          />
+          {isNonEmptyString(inputValue) &&
+            renderSuggestions?.({
+              searchValue: inputValue,
+              onSelect: handleSelectSuggestion,
+            })}
+        </>
       ) : !isLimitReached ? (
         <DropdownMenuItemsContainer>
           <MenuItem

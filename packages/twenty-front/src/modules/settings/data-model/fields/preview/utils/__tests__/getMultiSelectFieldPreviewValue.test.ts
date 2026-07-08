@@ -60,11 +60,13 @@ describe('getMultiSelectFieldPreviewValue', () => {
 
     // Then
     expect(previewValue).toEqual([
-      'NEW',
-      'SCREENING',
-      'MEETING',
-      'PROPOSAL',
-      'CUSTOMER',
+      'LEAD',
+      'DRIP',
+      'QUOTE',
+      'INVOICE',
+      'PAID',
+      'SHIPPED',
+      'RECEIVED',
     ]);
   });
 
@@ -83,11 +85,13 @@ describe('getMultiSelectFieldPreviewValue', () => {
 
     // Then
     expect(previewValue).toEqual([
-      'NEW',
-      'SCREENING',
-      'MEETING',
-      'PROPOSAL',
-      'CUSTOMER',
+      'LEAD',
+      'DRIP',
+      'QUOTE',
+      'INVOICE',
+      'PAID',
+      'SHIPPED',
+      'RECEIVED',
     ]);
     expect(previewValue).toEqual(
       fieldMetadataItemWithDefaultValue.options?.map(({ value }) => value),
@@ -109,11 +113,13 @@ describe('getMultiSelectFieldPreviewValue', () => {
 
     // Then
     expect(previewValue).toEqual([
-      'NEW',
-      'SCREENING',
-      'MEETING',
-      'PROPOSAL',
-      'CUSTOMER',
+      'LEAD',
+      'DRIP',
+      'QUOTE',
+      'INVOICE',
+      'PAID',
+      'SHIPPED',
+      'RECEIVED',
     ]);
     expect(previewValue).toEqual(
       fieldMetadataItemWithDefaultValue.options?.map(({ value }) => value),

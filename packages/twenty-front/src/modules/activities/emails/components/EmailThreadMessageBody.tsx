@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Linkify from 'linkify-react';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
 import { AnimatedEaseInOut } from 'twenty-ui/layout';
+import { formatEmailMessageText } from '@/activities/emails/utils/formatEmailMessageText';
 
 const StyledThreadMessageBody = styled(motion.div)`
   color: ${themeCssVariables.font.color.primary};
@@ -34,6 +35,8 @@ export const EmailThreadMessageBody = ({
   body,
   isDisplayed,
 }: EmailThreadMessageBodyProps) => {
+  const formattedBody = formatEmailMessageText(body);
+
   return (
     <AnimatedEaseInOut isOpen={isDisplayed} duration="fast">
       <StyledThreadMessageBody>
@@ -43,7 +46,7 @@ export const EmailThreadMessageBody = ({
             rel: 'noopener noreferrer',
           }}
         >
-          {body}
+          {formattedBody}
         </Linkify>
       </StyledThreadMessageBody>
     </AnimatedEaseInOut>

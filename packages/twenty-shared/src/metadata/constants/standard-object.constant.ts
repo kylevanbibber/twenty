@@ -1816,20 +1816,26 @@ export const STANDARD_OBJECTS = {
           },
         },
         viewGroups: {
-          new: {
+          lead: {
             universalIdentifier: '20202020-af14-4a04-8a04-0aa0b2ca2bf1',
           },
-          screening: {
+          drip: {
             universalIdentifier: '20202020-af14-4a04-8a04-0aa0b2ca2bf2',
           },
-          meeting: {
+          quote: {
             universalIdentifier: '20202020-af14-4a04-8a04-0aa0b2ca2bf3',
           },
-          proposal: {
+          invoice: {
             universalIdentifier: '20202020-af14-4a04-8a04-0aa0b2ca2bf4',
           },
-          customer: {
+          paid: {
             universalIdentifier: '20202020-af14-4a04-8a04-0aa0b2ca2bf5',
+          },
+          shipped: {
+            universalIdentifier: '20202020-af14-4a04-8a04-0aa0b2ca2bf6',
+          },
+          received: {
+            universalIdentifier: '20202020-af14-4a04-8a04-0aa0b2ca2bf7',
           },
         },
       },

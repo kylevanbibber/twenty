@@ -45,8 +45,9 @@ describe('computeGmailExcludeSearchFilter', () => {
       );
 
       expect(result).toContain('(label:crm OR label:twenty-visible)');
-      expect(result).toContain('-label:spam');
-      expect(result).toContain('-label:trash');
+      expect(result).toContain('-label:chat');
+      expect(result).not.toContain('-label:spam');
+      expect(result).not.toContain('-label:trash');
       expect(result).not.toContain('-category:promotions');
       expect(result).not.toContain('-category:updates');
     });
@@ -73,7 +74,7 @@ describe('computeGmailExcludeSearchFilter', () => {
       expect(result).toContain('label:inbox');
       expect(result).toContain('-category:promotions');
       expect(result).toContain('-category:social');
-      expect(result).toContain('-label:spam');
+      expect(result).not.toContain('-label:spam');
     });
 
     it('excludes category filters when user label and INBOX are both selected', () => {
@@ -104,10 +105,10 @@ describe('computeGmailExcludeSearchFilter', () => {
       expect(result).toContain('label:crm');
       expect(result).toContain('label:inbox');
       expect(result).not.toContain('-category:promotions');
-      expect(result).toContain('-label:spam');
+      expect(result).toContain('-label:chat');
     });
 
-    it('returns only default exclusions when all folders are synced', () => {
+    it('returns only system exclusions when all folders are synced', () => {
       const result = computeGmailExcludeSearchFilter(
         [
           {
@@ -126,10 +127,11 @@ describe('computeGmailExcludeSearchFilter', () => {
         MessageFolderImportPolicy.SELECTED_FOLDERS,
       );
 
-      expect(result).toContain('-label:spam');
-      expect(result).toContain('-category:promotions');
+      expect(result).not.toContain('-label:spam');
+      expect(result).not.toContain('-category:promotions');
       expect(result).not.toContain('label:inbox');
       expect(result).not.toContain('label:crm');
+      expect(result).toContain('-label:chat');
     });
 
     it('handles nested folder paths correctly', () => {
@@ -156,7 +158,7 @@ describe('computeGmailExcludeSearchFilter', () => {
   });
 
   describe('ALL_FOLDERS policy', () => {
-    it('returns only default exclusions', () => {
+    it('returns only system exclusions', () => {
       const result = computeGmailExcludeSearchFilter(
         [
           {
@@ -169,13 +171,14 @@ describe('computeGmailExcludeSearchFilter', () => {
         MessageFolderImportPolicy.ALL_FOLDERS,
       );
 
-      expect(result).toContain('-label:spam');
-      expect(result).toContain('-category:promotions');
+      expect(result).not.toContain('-label:spam');
+      expect(result).not.toContain('-category:promotions');
       expect(result).not.toContain('label:inbox');
+      expect(result).toContain('-label:chat');
     });
   });
 
-  it('uses -label: syntax for system exclusions', () => {
+  it('keeps chat as a system exclusion without hiding mailbox folders', () => {
     const result = computeGmailExcludeSearchFilter(
       [
         {
@@ -188,21 +191,22 @@ describe('computeGmailExcludeSearchFilter', () => {
       MessageFolderImportPolicy.SELECTED_FOLDERS,
     );
 
-    expect(result).toContain('-label:trash');
-    expect(result).toContain('-label:spam');
-    expect(result).toContain('-label:draft');
     expect(result).toContain('-label:chat');
+    expect(result).not.toContain('-label:trash');
+    expect(result).not.toContain('-label:spam');
+    expect(result).not.toContain('-label:draft');
   });
 
-  it('uses -category: syntax for category exclusions in ALL_FOLDERS mode', () => {
+  it('does not use category exclusions in ALL_FOLDERS mode', () => {
     const result = computeGmailExcludeSearchFilter(
       [],
       MessageFolderImportPolicy.ALL_FOLDERS,
     );
 
-    expect(result).toContain('-category:promotions');
-    expect(result).toContain('-category:social');
-    expect(result).toContain('-category:forums');
-    expect(result).toContain('-category:updates');
+    expect(result).not.toContain('-category:promotions');
+    expect(result).not.toContain('-category:social');
+    expect(result).not.toContain('-category:forums');
+    expect(result).not.toContain('-category:updates');
+    expect(result).toContain('-label:chat');
   });
 });

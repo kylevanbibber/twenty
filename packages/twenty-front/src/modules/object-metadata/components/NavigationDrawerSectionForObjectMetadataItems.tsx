@@ -16,12 +16,15 @@ import { isDefined } from 'twenty-shared/utils';
 const ORDERED_FIRST_STANDARD_OBJECTS: string[] = [
   'lead',
   CoreObjectNameSingular.Workflow,
-  CoreObjectNameSingular.Task,
-  CoreObjectNameSingular.Note,
 ];
 
 const ORDERED_LAST_STANDARD_OBJECTS: string[] = [
   CoreObjectNameSingular.Dashboard,
+];
+
+const HIDDEN_OBJECTS: string[] = [
+  CoreObjectNameSingular.Task,
+  CoreObjectNameSingular.Note,
 ];
 
 type NavigationDrawerSectionForObjectMetadataItemsProps = {
@@ -54,7 +57,11 @@ export const NavigationDrawerSectionForObjectMetadataItems = ({
 
   const { objectPermissionsByObjectMetadataId } = useObjectPermissions();
 
-  const sortedStandardObjectMetadataItems = [...objectMetadataItems]
+  const visibleObjectMetadataItems = objectMetadataItems.filter(
+    (item) => !HIDDEN_OBJECTS.includes(item.nameSingular),
+  );
+
+  const sortedStandardObjectMetadataItems = [...visibleObjectMetadataItems]
     .filter(
       (item) =>
         ORDERED_FIRST_STANDARD_OBJECTS.includes(item.nameSingular) &&
@@ -75,7 +82,7 @@ export const NavigationDrawerSectionForObjectMetadataItems = ({
       return indexA - indexB;
     });
 
-  const sortedCustomObjectMetadataItems = [...objectMetadataItems]
+  const sortedCustomObjectMetadataItems = [...visibleObjectMetadataItems]
     .filter(
       (item) =>
         !ORDERED_FIRST_STANDARD_OBJECTS.includes(item.nameSingular) &&
@@ -90,7 +97,7 @@ export const NavigationDrawerSectionForObjectMetadataItems = ({
 
   const sortedLastStandardObjectMetadataItems =
     ORDERED_LAST_STANDARD_OBJECTS.map((nameSingular) => {
-      return objectMetadataItems.find(
+      return visibleObjectMetadataItems.find(
         (item) => item.nameSingular === nameSingular,
       );
     }).filter(isDefined);

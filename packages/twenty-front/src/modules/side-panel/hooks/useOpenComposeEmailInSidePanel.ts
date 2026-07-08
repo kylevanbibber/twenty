@@ -7,6 +7,8 @@ import { v4 } from 'uuid';
 
 import { useSidePanelMenu } from '@/side-panel/hooks/useSidePanelMenu';
 import { composeEmailConnectedAccountIdComponentState } from '@/side-panel/pages/compose-email/states/composeEmailConnectedAccountIdComponentState';
+import { composeEmailDefaultBodyComponentState } from '@/side-panel/pages/compose-email/states/composeEmailDefaultBodyComponentState';
+import { composeEmailDefaultCcComponentState } from '@/side-panel/pages/compose-email/states/composeEmailDefaultCcComponentState';
 import { composeEmailDefaultInReplyToComponentState } from '@/side-panel/pages/compose-email/states/composeEmailDefaultInReplyToComponentState';
 import { composeEmailDefaultSubjectComponentState } from '@/side-panel/pages/compose-email/states/composeEmailDefaultSubjectComponentState';
 import { composeEmailDefaultToComponentState } from '@/side-panel/pages/compose-email/states/composeEmailDefaultToComponentState';
@@ -16,7 +18,9 @@ type OpenComposeEmailParams = {
   threadId?: string;
   connectedAccountId: string;
   defaultTo?: string;
+  defaultCc?: string;
   defaultSubject?: string;
+  defaultBody?: string;
   defaultInReplyTo?: string;
   pageTitle?: string;
   pageIcon?: IconComponent;
@@ -47,10 +51,24 @@ export const useOpenComposeEmailInSidePanel = () => {
       );
 
       store.set(
+        composeEmailDefaultCcComponentState.atomFamily({
+          instanceId: pageId,
+        }),
+        params.defaultCc ?? '',
+      );
+
+      store.set(
         composeEmailDefaultSubjectComponentState.atomFamily({
           instanceId: pageId,
         }),
         params.defaultSubject ?? '',
+      );
+
+      store.set(
+        composeEmailDefaultBodyComponentState.atomFamily({
+          instanceId: pageId,
+        }),
+        params.defaultBody ?? '',
       );
 
       store.set(

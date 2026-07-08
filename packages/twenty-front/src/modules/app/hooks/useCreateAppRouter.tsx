@@ -108,6 +108,12 @@ const CampaignTemplatesPage = lazy(() =>
   })),
 );
 
+const CommunicationsPage = lazy(() =>
+  import('~/pages/communications/CommunicationsPage').then((module) => ({
+    default: module.CommunicationsPage,
+  })),
+);
+
 const NotFound = lazy(() =>
   import('~/pages/not-found/NotFound').then((module) => ({
     default: module.NotFound,
@@ -248,6 +254,14 @@ export const useCreateAppRouter = (
               element={
                 <LazyRoute>
                   <CampaignTemplatesPage />
+                </LazyRoute>
+              }
+            />
+            <Route
+              path={AppPath.Communications}
+              element={
+                <LazyRoute>
+                  <CommunicationsPage />
                 </LazyRoute>
               }
             />

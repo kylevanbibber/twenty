@@ -163,6 +163,37 @@ describe('filterEmails', () => {
     expect(result).toEqual(messages);
   });
 
+  it('should keep emails with calendar invite attachments', () => {
+    const primaryHandle = 'user@example.com';
+    const messages: MessageWithParticipants[] = [
+      {
+        externalId: 'calendar-invite',
+        subject: 'Event accepted: Demo',
+        receivedAt: new Date('2026-07-06T13:00:00.000Z'),
+        text: 'Event invitation update',
+        headerMessageId: '<invite@example.com>',
+        messageThreadExternalId: 'thread-calendar',
+        direction: MessageDirection.INCOMING,
+        participants: [
+          {
+            role: MessageParticipantRole.FROM,
+            handle: 'calendar-notification@google.com',
+            displayName: 'Google Calendar',
+          },
+        ],
+        attachments: [
+          {
+            filename: 'invite.ics',
+          },
+        ],
+      },
+    ];
+
+    const result = filterEmails(primaryHandle, [], messages, [], false);
+
+    expect(result).toEqual(messages);
+  });
+
   it('should keep messages without participants', () => {
     const primaryHandle = 'user@example.com';
     const messages: MessageWithParticipants[] = [

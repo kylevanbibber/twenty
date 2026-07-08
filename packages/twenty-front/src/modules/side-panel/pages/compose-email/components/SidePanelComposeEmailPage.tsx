@@ -5,6 +5,8 @@ import { useEmailComposerState } from '@/activities/emails/hooks/useEmailCompose
 import { SIDE_PANEL_FOCUS_ID } from '@/side-panel/constants/SidePanelFocusId';
 import { useSidePanelHistory } from '@/side-panel/hooks/useSidePanelHistory';
 import { composeEmailConnectedAccountIdComponentState } from '@/side-panel/pages/compose-email/states/composeEmailConnectedAccountIdComponentState';
+import { composeEmailDefaultBodyComponentState } from '@/side-panel/pages/compose-email/states/composeEmailDefaultBodyComponentState';
+import { composeEmailDefaultCcComponentState } from '@/side-panel/pages/compose-email/states/composeEmailDefaultCcComponentState';
 import { composeEmailDefaultInReplyToComponentState } from '@/side-panel/pages/compose-email/states/composeEmailDefaultInReplyToComponentState';
 import { composeEmailDefaultSubjectComponentState } from '@/side-panel/pages/compose-email/states/composeEmailDefaultSubjectComponentState';
 import { composeEmailDefaultToComponentState } from '@/side-panel/pages/compose-email/states/composeEmailDefaultToComponentState';
@@ -37,8 +39,14 @@ export const SidePanelComposeEmailPage = () => {
   const composeEmailDefaultTo = useAtomComponentStateValue(
     composeEmailDefaultToComponentState,
   );
+  const composeEmailDefaultCc = useAtomComponentStateValue(
+    composeEmailDefaultCcComponentState,
+  );
   const composeEmailDefaultSubject = useAtomComponentStateValue(
     composeEmailDefaultSubjectComponentState,
+  );
+  const composeEmailDefaultBody = useAtomComponentStateValue(
+    composeEmailDefaultBodyComponentState,
   );
   const composeEmailDefaultInReplyTo = useAtomComponentStateValue(
     composeEmailDefaultInReplyToComponentState,
@@ -49,7 +57,9 @@ export const SidePanelComposeEmailPage = () => {
   const composerState = useEmailComposerState({
     connectedAccountId: composeEmailConnectedAccountId ?? '',
     defaultTo: composeEmailDefaultTo ?? '',
+    defaultCc: composeEmailDefaultCc ?? '',
     defaultSubject: composeEmailDefaultSubject ?? '',
+    defaultBody: composeEmailDefaultBody ?? '',
     defaultInReplyTo: composeEmailDefaultInReplyTo ?? undefined,
     onSent: goBackFromSidePanel,
   });

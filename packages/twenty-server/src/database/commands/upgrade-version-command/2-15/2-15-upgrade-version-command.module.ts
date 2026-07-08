@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { AddLeadStatusFieldCommand } from 'src/database/commands/upgrade-version-command/2-15/2-15-workspace-command-1800000003000-add-lead-status-field.command';
 import { WorkspaceIteratorModule } from 'src/database/commands/command-runners/workspace-iterator.module';
 import { MigrateManualTriggerVariablesToPayloadCommand } from 'src/database/commands/upgrade-version-command/2-15/2-15-workspace-command-1800000001000-migrate-manual-trigger-variables-to-payload.command';
 import { SyncCalendarEventRecordPageCommand } from 'src/database/commands/upgrade-version-command/2-15/2-15-workspace-command-1800000002000-sync-calendar-event-record-page.command';
@@ -17,6 +18,7 @@ import { WorkspaceMigrationModule } from 'src/engine/workspace-manager/workspace
   providers: [
     MigrateManualTriggerVariablesToPayloadCommand,
     SyncCalendarEventRecordPageCommand,
+    AddLeadStatusFieldCommand,
   ],
 })
 export class V2_15_UpgradeVersionCommandModule {}

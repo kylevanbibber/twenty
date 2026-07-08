@@ -5,6 +5,7 @@ import { fieldMetadataItemByIdSelector } from '@/object-metadata/states/fieldMet
 import { type FieldMetadataItemOption } from '@/object-metadata/types/FieldMetadataItem';
 import { useOptionsForSelect } from '@/object-record/object-filter-dropdown/hooks/useOptionsForSelect';
 import { DropdownMenuItemsContainer } from '@/ui/layout/dropdown/components/DropdownMenuItemsContainer';
+import { DropdownMenuSeparator } from '@/ui/layout/dropdown/components/DropdownMenuSeparator';
 import { SelectableList } from '@/ui/layout/selectable-list/components/SelectableList';
 
 import { useSelectableList } from '@/ui/layout/selectable-list/hooks/useSelectableList';
@@ -123,18 +124,9 @@ export const ObjectFilterDropdownOptionSelect = ({
     dependencies: [closeDropdown, resetSelectedItem],
   });
 
-  const handleMultipleOptionSelectChange = (
-    optionChanged: SelectOptionForFilter,
-    isSelected: boolean,
+  const applySelectableOptions = (
+    newSelectableOptions: SelectOptionForFilter[],
   ) => {
-    if (!selectOptions) {
-      return;
-    }
-
-    const newSelectableOptions = selectableOptions.map((option) =>
-      option.id === optionChanged.id ? { ...option, isSelected } : option,
-    );
-
     setSelectableOptions(newSelectableOptions);
 
     const selectedOptions = newSelectableOptions.filter(
@@ -156,11 +148,60 @@ export const ObjectFilterDropdownOptionSelect = ({
     resetSelectedItem();
   };
 
+  const handleMultipleOptionSelectChange = (
+    optionChanged: SelectOptionForFilter,
+    isSelected: boolean,
+  ) => {
+    if (!selectOptions) {
+      return;
+    }
+
+    applySelectableOptions(
+      selectableOptions.map((option) =>
+        option.id === optionChanged.id ? { ...option, isSelected } : option,
+      ),
+    );
+  };
+
   const optionsInDropdown = selectableOptions?.filter((option) =>
     option.label
       .toLowerCase()
       .includes(objectFilterDropdownSearchInput.toLowerCase()),
   );
+
+  // Select-all applies only to the currently visible (search-filtered) options,
+  // mirroring r3-team's ColumnFilter behavior.
+  const visibleOptionIds = new Set(
+    optionsInDropdown.map((option) => option.id),
+  );
+
+  const areAllVisibleOptionsSelected =
+    optionsInDropdown.length > 0 &&
+    optionsInDropdown.every((option) => option.isSelected);
+
+  const handleSelectAllOptions = () => {
+    if (!selectOptions) {
+      return;
+    }
+
+    applySelectableOptions(
+      selectableOptions.map((option) =>
+        visibleOptionIds.has(option.id)
+          ? { ...option, isSelected: true }
+          : option,
+      ),
+    );
+  };
+
+  const handleClearAllOptions = () => {
+    if (!selectOptions) {
+      return;
+    }
+
+    applySelectableOptions(
+      selectableOptions.map((option) => ({ ...option, isSelected: false })),
+    );
+  };
 
   const showNoResult = optionsInDropdown?.length === 0;
 
@@ -172,6 +213,21 @@ export const ObjectFilterDropdownOptionSelect = ({
       selectableItemIdArray={objectRecordsIds}
       focusId={focusId}
     >
+      {!showNoResult && (
+        <>
+          <DropdownMenuItemsContainer scrollable={false}>
+            <MenuItem
+              text={areAllVisibleOptionsSelected ? t`Clear all` : t`Select all`}
+              onClick={
+                areAllVisibleOptionsSelected
+                  ? handleClearAllOptions
+                  : handleSelectAllOptions
+              }
+            />
+          </DropdownMenuItemsContainer>
+          <DropdownMenuSeparator />
+        </>
+      )}
       <DropdownMenuItemsContainer hasMaxHeight>
         {showNoResult ? (
           <MenuItem text={t`No results`} />

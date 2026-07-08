@@ -10,6 +10,14 @@ import { CoreObjectNameSingular, SettingsPath } from 'twenty-shared/types';
 import { isDefined } from 'twenty-shared/utils';
 import { useNavigateSettings } from '~/hooks/useNavigateSettings';
 
+type LeadEmailRecord = {
+  __typename: string;
+  id: string;
+  email?: {
+    primaryEmail?: string | null;
+  } | null;
+};
+
 export const ComposeEmailCommand = () => {
   const { connectedAccountId, loading: accountLoading } =
     useFirstConnectedAccount();
@@ -25,9 +33,13 @@ export const ComposeEmailCommand = () => {
 
   const objectNameSingular = objectMetadataItem?.nameSingular ?? null;
   const isPerson = objectNameSingular === CoreObjectNameSingular.Person;
+  const isLead = objectNameSingular === 'lead';
 
   const isBulkPerson =
     isPerson &&
+    (selectedRecords.length > 1 || targetedRecordsRule.mode === 'exclusion');
+  const isBulkLead =
+    isLead &&
     (selectedRecords.length > 1 || targetedRecordsRule.mode === 'exclusion');
 
   const { records: bulkPersonRecords, loading: bulkLoading } =
@@ -39,7 +51,16 @@ export const ComposeEmailCommand = () => {
       skip: !isBulkPerson,
     });
 
-  const singleSelectedRecordId = !isBulkPerson
+  const { records: bulkLeadRecords, loading: bulkLeadLoading } =
+    useFindManyRecords<LeadEmailRecord>({
+      objectNameSingular: 'lead',
+      filter: graphqlFilter ?? undefined,
+      recordGqlFields: { id: true, email: { primaryEmail: true } },
+      limit: MAX_EMAIL_RECIPIENTS,
+      skip: !isBulkLead,
+    });
+
+  const singleSelectedRecordId = !isBulkPerson && !isBulkLead
     ? (selectedRecords[0]?.id ?? null)
     : null;
 
@@ -54,6 +75,11 @@ export const ComposeEmailCommand = () => {
         .map(getPrimaryEmailFromRecord)
         .filter(isDefined)
         .join(', ')
+    : isBulkLead
+      ? bulkLeadRecords
+          .map((record) => record.email?.primaryEmail)
+          .filter(isDefined)
+          .join(', ')
     : singleDefaultTo;
 
   const handleExecute = () => {
@@ -70,7 +96,12 @@ export const ComposeEmailCommand = () => {
   };
 
   const ready =
-    !accountLoading && (isBulkPerson ? !bulkLoading : !recipientLoading);
+    !accountLoading &&
+    (isBulkPerson
+      ? !bulkLoading
+      : isBulkLead
+        ? !bulkLeadLoading
+        : !recipientLoading);
 
   return (
     <HeadlessEngineCommandWrapperEffect execute={handleExecute} ready={ready} />

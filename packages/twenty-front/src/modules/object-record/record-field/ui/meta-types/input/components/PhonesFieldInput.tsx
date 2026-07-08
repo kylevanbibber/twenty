@@ -12,6 +12,8 @@ import 'react-phone-number-input/style.css';
 import { MultiItemFieldInput } from './MultiItemFieldInput';
 
 import { FieldInputEventContext } from '@/object-record/record-field/ui/contexts/FieldInputEventContext';
+import { useFieldInputObjectNameSingular } from '@/object-record/record-field/ui/meta-types/hooks/useFieldInputObjectNameSingular';
+import { PhoneValueSuggestions } from '@/object-record/record-field/ui/meta-types/input/components/PhoneValueSuggestions';
 import { MULTI_ITEM_FIELD_INPUT_DROPDOWN_ID_PREFIX } from '@/object-record/record-field/ui/meta-types/input/constants/MultiItemFieldInputDropdownClickOutsideId';
 import { createPhonesFromFieldValue } from '@/object-record/record-field/ui/meta-types/input/utils/phonesUtils';
 import {
@@ -21,6 +23,7 @@ import {
 import { phonesFieldValueSchema } from '@/object-record/record-field/ui/validation-schemas/phonesFieldValueSchema';
 import { PhoneCountryPickerDropdownButton } from '@/ui/input/components/internal/phone/components/PhoneCountryPickerDropdownButton';
 import { useContext } from 'react';
+import { isNonEmptyString } from '@sniptt/guards';
 import { MULTI_ITEM_FIELD_DEFAULT_MAX_VALUES } from 'twenty-shared/constants';
 import { isDefined } from 'twenty-shared/utils';
 import { themeCssVariables } from 'twenty-ui/theme-constants';
@@ -152,6 +155,8 @@ export const PhonesFieldInput = () => {
     onEnter?.({ newValue: parseArrayToPhonesValue(updatedPhones) });
   };
 
+  const objectNameSingular = useFieldInputObjectNameSingular();
+
   return (
     <MultiItemFieldInput
       items={phones}
@@ -227,6 +232,18 @@ export const PhonesFieldInput = () => {
       }}
       onError={handleError}
       maxItemCount={maxNumberOfValues}
+      renderSuggestions={
+        isNonEmptyString(objectNameSingular)
+          ? ({ searchValue, onSelect }) => (
+              <PhoneValueSuggestions
+                objectNameSingular={objectNameSingular}
+                fieldName={fieldDefinition.metadata.fieldName}
+                searchValue={searchValue}
+                onSelect={onSelect}
+              />
+            )
+          : undefined
+      }
     />
   );
 };

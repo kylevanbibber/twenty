@@ -187,7 +187,9 @@ async function fillMissing(worker,canvas,card){
 export async function scanSheet(file,{rows=1,columns=1,onProgress=()=>{}}={}){
   const {createWorker}=await import('tesseract.js');
   onProgress('Loading text reader…');
-  const worker=await createWorker('eng',1,{workerPath:'/tesseract/worker.min.js',corePath:'/tesseract/core',langPath:'/tesseract/lang'});
+  // Absolute URLs: core and language paths are resolved inside the worker, not the page.
+  const assets=new URL(`${import.meta.env.BASE_URL}tesseract/`,window.location.href).href;
+  const worker=await createWorker('eng',1,{workerPath:`${assets}worker.min.js`,corePath:`${assets}core`,langPath:`${assets}lang`});
   try{
     await worker.setParameters({tessedit_char_whitelist:'0123456789',tessedit_pageseg_mode:'11'});
     const image=await loadImage(file);

@@ -26,7 +26,7 @@ export function GamesTab({library,game,mutate,addGame,openGame,removeGame,sessio
   };
   const sendLink=async()=>{
     setBusy(true);
-    const {error}=await supabase.auth.signInWithOtp({email:email.trim(),options:{emailRedirectTo:window.location.origin}});
+    const {error}=await supabase.auth.signInWithOtp({email:email.trim(),options:{emailRedirectTo:window.location.origin+window.location.pathname}});
     setBusy(false);
     if(error){alert(error.message);return}
     setCodeSent(true);

@@ -1,3 +1,4 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-export default defineConfig({ plugins: [react()] });
+// Relative base so the same build works at a domain root (Vercel) or a subpath (GitHub Pages).
+export default defineConfig({ base: './', plugins: [react()] });

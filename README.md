@@ -1,42 +1,44 @@
-# Bingo Buddy — Cloud Ready Prototype
+# Bingo Buddy
 
-A working, responsive React + Vite bingo tracker based on the ChatGPT prototype.
+A fast, phone-first bingo tracker (React + Vite). It tracks called balls across all your cards, shows which card is closest to a win, verifies bingos square by square, scans paper cards with the camera, and syncs saved games across devices with Supabase.
 
-## What is included
-- 18 manually transcribed cards from the **two most recent photos**, with card number correction.
-- Double bingo: two distinct enabled patterns on **the same card**. Union of both pattern sets is used so overlaps count only once.
-- All eight 5-ending numbers count as wild; free center counts automatically.
-- Choose/disable individual regular and specialty patterns from the printed pattern sheet. Note that specialty orientations and interpretations **must be verified with the bingo hall**.
-- Called-ball entry, 75-number keypad, undo and reset, sorted nearest cards and winning alerts.
-- Monte Carlo odds estimate (chance at least one of your cards completes two patterns within next 1/3/5/10/20 eligible calls). It does NOT claim to predict other players or being first to win.
-- Local auto-save, JSON export/import, optional private Supabase cloud sync by email magic-link authentication.
+## Rules it models
+- **Double bingo** (default): two distinct enabled patterns completed on the **same card**. Overlapping squares only need calling once. Single-pattern bingo can be switched on in **Patterns**.
+- **Wild 5s**: 5, 15, 25 … 75 count on every card (toggle in **Patterns**). The FREE center always counts.
+- The 18 cards transcribed from the two sheet photos, and the printed pattern list, are preserved. Specialty pattern orientations still need confirming with your hall.
+
+## Features
+- **Tracker**: type `12` or `B12` (or tap the keypad), see the last call with one-tap undo, call history, cards ranked by numbers still needed, and a **“Wins on the next ball”** list (exact, not simulated). On a win, the phone vibrates and a banner opens a checklist of each square (called as #n / wild / free) for checking against paper.
+- **Odds**: Monte Carlo (runs in a Web Worker) giving the chance of a bingo within the next 1–30 calls with a ±95% range, the median number of calls to a win, the best cards, an option for wild balls that are still drawn and announced, and an opponent model that simulates N random standard cards in the hall. The opponent model is labelled as a model: real opponents' cards aren't known.
+- **Patterns**: visual previews, enable/disable each pattern, and a tap-to-draw **custom pattern** editor (saved with the game).
+- **Cards**: **camera scanning** of one card or a whole sheet (1, 2, 4, 6 or 9-up). OCR runs on the device, using files served from this site. Unsure squares are highlighted yellow, numbers outside their B/I/N/G/O range or duplicated are flagged red, and nothing is saved until you confirm it. You can also type a card by hand, mark cards **verified** against paper, and remove cards.
+- **Games**: multiple saved games (new round with the same cards, duplicate, original 18 cards), JSON export/import, and Supabase sign-in by email link **or code** with automatic per-game sync.
+- Installable to the home screen (web manifest) and saved on the device after every change.
 
 ## Run locally
 ```bash
 npm install
-npm run dev
+npm run dev      # http://localhost:5173 (also on your LAN for testing on a phone)
+npm test         # rules, odds and scan-parsing tests
+npm run build
 ```
-Open the local URL Vite prints (usually http://localhost:5173).
 
-## Cloud deploy with Vercel
-1. Push the project folder to a GitHub repository (e.g. by opening it in Claude Code).
-2. In Vercel, create a project from that repository, choose **Vite** as framework; build command `npm run build`, output directory `dist`.
-3. Optional cloud sync: create Supabase project, run `supabase/schema.sql` in SQL Editor. Email authentication should be enabled.
-4. Add environment variables in Vercel **and locally in `.env`**:
-   - `VITE_SUPABASE_URL` = Supabase Project URL
-   - `VITE_SUPABASE_ANON_KEY` = Supabase publishable/anon key (NOT service_role or secret key)
-5. In Supabase Authentication > URL Configuration, set Site URL to your deployed domain and add its redirect URL (`https://yourdomain.com/**`). Redeploy.
-6. Sign in from the Save / Cloud tab; changes sync for that account after edits. On a new device, sign in and press **Restore latest cloud game**.
+## Deploy to Vercel
+1. In Vercel: **Add New → Project → Import** this GitHub repository.
+2. Framework **Vite** (auto-detected from `vercel.json`). Build `npm run build`, output `dist`.
+3. Deploy. The app works immediately with on-device saving; cloud sync just needs the two variables below.
 
-## Limitations / next Claude Code tasks
-- IMPORTANT: Before real usage verify all 18 manually transcribed cards. The camera OCR/scanner is **not implemented**. Use 'Correct card numbers' for mistakes.
-- Several specialty patterns on the photo are partly cropped or visually ambiguous. Confirm positions and whether orientation variations count with the hall. Each variant should be modeled as a distinct named pattern; decide whether two variations of one pattern type may count as two wins.
-- The current app treats any two distinct selected patterns as Double Bingo, including overlapping patterns. Confirm rules with the bingo hall. No physical daub detection or automatic OCR.
-- App saves ONE active game locally. Cloud table supports multiple rows per user, but the UI currently restores the latest cloud game; add a session list and conflict resolution if needed.
-- A user's cloud session must be restored explicitly after login on a second device to avoid overwriting an existing game.
-- Odds treat wild numbers as covered already and sample among the remaining eligible non-wild balls. This approximates subsequent *eligible* calls, not necessarily literal caller draws if wild-number balls are still physically drawn and announced.
-- Competitor-card counts are not modeled as independent probabilities, and there is no precise first-winner odds estimate yet. Do not display fabricated winning-before-opponents estimates.
-- Check whether the bingo hall and state law permit electronic tracking assistance during play.
+## Cloud sync with Supabase
+1. Create a Supabase project. In **SQL Editor**, run `supabase/schema.sql` (safe to re-run). It creates `bingo_games` with row-level security so each user only sees their own games.
+2. **Authentication → URL Configuration**: set **Site URL** to your Vercel URL (e.g. `https://bingo-buddy.vercel.app`) and add `https://bingo-buddy.vercel.app/**` to Redirect URLs. Add `http://localhost:5173/**` for local testing.
+3. Optional but recommended for phones: **Authentication → Email Templates → Magic Link**, add `{{ .Token }}` to the template so the email also contains a code. That lets you sign in inside the home-screen app, where tapping the link would open a different browser.
+4. In Vercel **Settings → Environment Variables** (and in a local `.env`), set:
+   - `VITE_SUPABASE_URL`: the project URL
+   - `VITE_SUPABASE_ANON_KEY`: the **anon / publishable** key (never the service_role or secret key)
+5. Redeploy. Sign in from the **Games** tab. On every sign-in, all cloud games are merged with this device's games, keeping the most recently changed copy of each.
 
-## Paste into Claude Code
-"Review this repository and improve Bingo Buddy. Preserve the 18 provided cards, double bingo any-two-distinct-enabled-pattern rule, and ends-in-5 wild numbers. First verify/fix the specialty pattern variants against photos I attach. Then implement phone camera scanning with manual OCR corrections, authenticated multi-game cloud saving, and deployment to Vercel. Add automated tests covering overlapping patterns, FREE center, wild 5s, and correct winning alerts. Never fabricate odds or assume specialty configurations without verification."
+## Notes and limits
+- Verify transcribed and scanned cards against paper before real play. The **Cards** tab tracks which ones you've checked.
+- Scanning works best with a flat, well-lit, straight-on photo. For sheets, choose the layout so each card is cropped separately; photograph single cards if a sheet scan flags a lot.
+- Sync is last-write-wins per game. Editing the same game on two devices at once keeps the later edit.
+- Check whether your hall and local law permit electronic tracking during play.

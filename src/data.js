@@ -48,4 +48,43 @@ export const PATTERNS=[
 {id:'coverall',name:'Coverall',cells:Array.from({length:25},(_,i)=>i)}
 ];
 export const WILDS=[5,15,25,35,45,55,65,75];
-export const initialGame=()=>({id:crypto.randomUUID(),name:'Double bingo — wild 5s',cards:structuredClone(INITIAL_CARDS),called:[],wildFives:true,requiredPatterns:2,enabledIds:PATTERNS.map(p=>p.id),selected:0,updatedAt:new Date().toISOString()});
+export const COLUMN_RANGES=[[1,15],[16,30],[31,45],[46,60],[61,75]];
+export const LETTERS='BINGO';
+export const letterFor=n=>LETTERS[Math.min(4,Math.floor((n-1)/15))];
+
+export const initialGame=(overrides={})=>({
+  id:crypto.randomUUID(),
+  name:'Double bingo — wild 5s',
+  cards:structuredClone(INITIAL_CARDS),
+  called:[],
+  wildFives:true,
+  requiredPatterns:2,
+  enabledIds:PATTERNS.map(p=>p.id),
+  customPatterns:[],
+  verified:INITIAL_CARDS.map(()=>false),
+  selected:0,
+  updatedAt:new Date().toISOString(),
+  ...overrides
+});
+
+// Fills in fields added after v1 so older saves, backups and cloud rows keep working.
+export function normalizeGame(game){
+  const cards=game.cards??structuredClone(INITIAL_CARDS);
+  const verified=Array.isArray(game.verified)?game.verified:[];
+  return {
+    ...game,
+    id:game.id??crypto.randomUUID(),
+    name:game.name??'Bingo game',
+    cards,
+    called:Array.isArray(game.called)?game.called:[],
+    wildFives:game.wildFives??true,
+    requiredPatterns:game.requiredPatterns===1?1:2,
+    enabledIds:Array.isArray(game.enabledIds)?game.enabledIds:PATTERNS.map(p=>p.id),
+    customPatterns:Array.isArray(game.customPatterns)?game.customPatterns:[],
+    verified:cards.map((_,i)=>verified[i]===true),
+    selected:Math.min(game.selected??0,Math.max(cards.length-1,0)),
+    updatedAt:game.updatedAt??new Date().toISOString()
+  };
+}
+
+export const gamePatterns=game=>[...PATTERNS,...(game.customPatterns??[])];
